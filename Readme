@@ -78,6 +78,30 @@ lancer le main   pui le main post (apres avoir promu en DC ca restart)
 
 
 
+---------------- ORDRE EXEC 
+
+
+
+SRV-ADMIN (en premier) :
+
+.\NetworkConfig_SrvAdmin.ps1 → reboot
+.\main_admin.ps1 → reboot
+.\main_admin_post.ps1
+
+SRV-WORKSHOP (ensuite) :
+
+.\NetworkConfig_SrvWorkshop.ps1 → reboot
+.\main_workshop.ps1 → reboot
+.\main_workshop_post.ps1
+
+Clients (en dernier, une fois les serveurs prêts) :
+
+.\NetworkConfig_ClientAdmin.ps1 → reboot
+.\JoinDomain_Client.ps1 → reboot
+
+
+
+
 -------------- les popups 
 
 
