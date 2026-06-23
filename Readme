@@ -46,7 +46,9 @@ aller dans C:
 USER : 
 
 
+exec le terminal en admin
 
+Set-ExecutionPolicy Unrestricted -Force
 Invoke-WebRequest -Uri "https://github.com/Thomasrbm/Automatic_Directory/archive/main.zip" -OutFile "$env:USERPROFILE\scripts.zip"
 Expand-Archive -Path "$env:USERPROFILE\scripts.zip" -DestinationPath "$env:USERPROFILE\" -Force
 
