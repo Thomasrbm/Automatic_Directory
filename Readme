@@ -34,3 +34,47 @@ aller dans C:
 
 
 2 / executer le main script 
+
+
+Set-ExecutionPolicy Unrestricted -Force  = autoriser les scripts
+
+
+.\ADPackageInstallor.ps1
+
+
+
+creer la foret 
+
+.\CreateNewForestDomainController.ps1
+
+
+
+la rejoindre 
+
+
+.\JoinExistingDomainController.ps1
+
+
+
+
+
+
+
+-------------- les popups 
+
+
+
+
+[Microsoft.VisualBasic.Interaction]::InputBox()  => ouvre popup windows
+
+
+sauf pour les mdps : Read-Host -AsSecureString
+
+
+
+
+
+
+
+
+---------------  PowerShell ISE
