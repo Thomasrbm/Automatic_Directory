@@ -39,20 +39,13 @@ aller dans C:
 Set-ExecutionPolicy Unrestricted -Force  = autoriser les scripts
 
 
-.\ADPackageInstallor.ps1
 
 
 
-creer la foret 
 
-.\CreateNewForestDomainController.ps1
-
+lancer le main   pui le main post (apres avoir promu en DC ca restart)
 
 
-la rejoindre 
-
-
-.\JoinExistingDomainController.ps1
 
 
 
