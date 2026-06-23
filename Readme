@@ -24,13 +24,36 @@ copier les scirpts depuis github
 telecharger le repo : 
 
 
+SERVEUR : 
+
 Invoke-WebRequest -Uri "https://github.com/Thomasrbm/Automatic_Directory/archive/main.zip" -OutFile "C:\scripts.zip"
 Expand-Archive -Path "C:\scripts.zip" -DestinationPath "C:\" -Force
 
 
 
 
+
+
+
 aller dans C:
+
+
+
+
+
+
+
+USER : 
+
+
+
+Invoke-WebRequest -Uri "https://github.com/Thomasrbm/Automatic_Directory/archive/main.zip" -OutFile "$env:USERPROFILE\scripts.zip"
+Expand-Archive -Path "$env:USERPROFILE\scripts.zip" -DestinationPath "$env:USERPROFILE\" -Force
+
+
+cd "$env:USERPROFILE\Automatic_Directory-main"
+
+
 
 
 2 / executer le main script 
