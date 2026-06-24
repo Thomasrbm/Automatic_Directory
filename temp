@@ -13,3 +13,7 @@ $Acl.SetAccessRule($Rule)
 Set-Acl "C:\GenericFiles" $Acl
 
 Write-Host "Permissions configurees." -ForegroundColor Green
+
+
+New-SmbShare -Name "AdminFiles" -Path "C:\AdminFiles" -FullAccess "Domain Admins" -ReadAccess "Authenticated Users"
+New-SmbShare -Name "GenericFiles" -Path "C:\GenericFiles" -FullAccess "Domain Admins" -ReadAccess "Authenticated Users"
