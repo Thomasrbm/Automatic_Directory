@@ -9,6 +9,9 @@ Add-Type -AssemblyName Microsoft.VisualBasic
 
 # Verifie que le script est lance en tant qu'administrateur
 function Test-Admin {
+    # [] un type ,  Securiy.  ...  chemin vers la classe,  :: methode
+    # getcurrent => renvoit obj windowidentity (compte, nom groupe)  
+    # IsInRole  = methode de WindowsPrincipal  => verif si admin
     if (-not ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {
         Write-Host "Droits administrateur requis." -ForegroundColor Red
         exit
@@ -16,7 +19,9 @@ function Test-Admin {
 }
 
 # Affiche un popup et retourne la valeur saisie (obligatoire)
+# 3 param dont default non obligatoire et vaut "" par defaut
 function Get-Input($message, $title, $default = "") {
+    # result stock,  input ouvre boite , message = question, title = titre window, default = si champs par defaut
     $result = [Microsoft.VisualBasic.Interaction]::InputBox($message, $title, $default)
     if ([string]::IsNullOrWhiteSpace($result)) {
         Write-Host "Champ '$title' requis. Abandon." -ForegroundColor Red
@@ -26,17 +31,25 @@ function Get-Input($message, $title, $default = "") {
 }
 
 # Affiche un popup et retourne la valeur saisie (optionnelle)
+# peut etre vide, pas de if vide
 function Get-OptionalInput($message, $title, $default = "") {
     return [Microsoft.VisualBasic.Interaction]::InputBox($message, $title, $default)
 }
 
 # Verifie qu'un utilisateur AD existe, quitte sinon
 function Assert-UserExists($username) {
+    # cherche user dans ad
+    # -filter critere de recherceh comme Where en sql
+    # Sam = nom de connexion
+    # -eq egale a 
+    # ne pas planter en cas d etteur 
     if (-not (Get-ADUser -Filter { SamAccountName -eq $username } -ErrorAction SilentlyContinue)) {
         Write-Host "Utilisateur '$username' introuvable. Operation bloquee." -ForegroundColor Red
         exit
     }
 }
+
+
 
 # Verifie qu'un groupe AD existe, quitte sinon
 function Assert-GroupExists($groupname) {
@@ -47,13 +60,30 @@ function Assert-GroupExists($groupname) {
 }
 
 # Cree un dossier, le partage en SMB et accorde les droits NTFS "Modify" a un compte
+
+# path ou on cree : C:\AdminFiles par ex
+# nom du dossier : AdminFiles ex
+# account avec droit : admin ex
 function New-WorkFolder($path, $shareName, $account) {
+    # cree,  type  directory,  le fonction renvoit du text => out null l ignore, force ne plante pas si existe deja 
     New-Item -ItemType Directory -Path $path -Force | Out-Null
+    # New-SmbShare = partage reseau,  fullacces pour le compte 
+    # dans page shared
     New-SmbShare -Name $shareName -Path $path -FullAccess $account -ErrorAction SilentlyContinue | Out-Null
+    # ACL = Access Control List = la liste des permissions d'un dossier ,    get = lit les permistion 
+    # sera modif et reappliquer
     $acl  = Get-Acl $path
-    $rule = New-Object System.Security.AccessControl.FileSystemAccessRule(
-        $account, "Modify", "ContainerInherit,ObjectInherit", "None", "Allow")
+    # dams page security (double verrou)
+    # nouvel obj, class access rule de security
+    $rule = N  New-Object System.Security.AccessControl.FileSystemAccessRule(
+      $account,                          # QUI    → DOMOLIA\admin
+      "Modify",                          # QUOI   → droit de modifier
+      "ContainerInherit,ObjectInherit",  # OÙ     → + sous-dossiers + fichiers
+      "None",                            # (propagation) → rien de spécial
+      "Allow")                           # SENS   → autoriser (pas interdire)
+    # applique modif sur la version ram en memoire (run time)
     $acl.SetAccessRule($rule)
+    # applique sur le disque
     Set-Acl $path $acl
     Write-Host "Dossier '$path' cree, partage ($shareName) et droits Modify accordes a $account." -ForegroundColor Green
 }
