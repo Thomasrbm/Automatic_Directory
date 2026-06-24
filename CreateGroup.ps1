@@ -8,3 +8,8 @@ $Scope = Get-Input "Etendue (Global, Universal, DomainLocal)" "Scope" "Global"
 $Desc  = Get-OptionalInput "Description du groupe" "Description"
 New-ADGroup -Name $Name -GroupScope $Scope -GroupCategory Security -Path $OU -Description $Desc
 Write-Host "Groupe '$Name' cree." -ForegroundColor Green
+
+# --- VERIFICATION : on relit le groupe dans AD pour prouver qu'il existe ---
+Write-Host "`n[VERIFICATION] Lecture du groupe cree :" -ForegroundColor Cyan
+Get-ADGroup -Identity $Name -Properties Description |
+    Select-Object Name, GroupScope, GroupCategory, Description, DistinguishedName | Format-List

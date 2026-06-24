@@ -24,3 +24,12 @@ Import-Csv -Path $Path -Delimiter $Delimiter | ForEach-Object {
         Write-Host "$($_.SamAccountName) cree." -ForegroundColor Green
     }
 }
+
+# --- VERIFICATION : combien de comptes du CSV sont effectivement presents dans AD ? ---
+Write-Host "`n[VERIFICATION] Comptes du CSV presents dans AD :" -ForegroundColor Cyan
+$total = 0; $ok = 0
+Import-Csv -Path $Path -Delimiter $Delimiter | ForEach-Object {
+    $total++
+    if (Get-ADUser -Filter { SamAccountName -eq $_.SamAccountName } -ErrorAction SilentlyContinue) { $ok++ }
+}
+Write-Host "$ok / $total comptes du fichier sont presents dans AD." -ForegroundColor Green

@@ -23,3 +23,15 @@ Get-ADGroup -Filter * -Properties $GroupProps |
     Export-Csv -Path ($Path -replace "\.csv", "_groups.csv") @CsvOptions
 
 Write-Host "Sauvegarde terminee : $Path" -ForegroundColor Green
+
+# --- VERIFICATION : les fichiers existent-ils et combien de lignes contiennent-ils ? ---
+Write-Host "`n[VERIFICATION] Fichiers CSV generes :" -ForegroundColor Cyan
+$GroupsPath = $Path -replace "\.csv", "_groups.csv"
+foreach ($f in @($Path, $GroupsPath)) {
+    if (Test-Path $f) {
+        $count = (Import-Csv -Path $f -Delimiter $Delimiter | Measure-Object).Count
+        Write-Host "OK : $f ($count lignes)" -ForegroundColor Green
+    } else {
+        Write-Host "MANQUANT : $f" -ForegroundColor Red
+    }
+}

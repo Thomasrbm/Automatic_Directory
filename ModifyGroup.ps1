@@ -8,3 +8,7 @@ $Attr  = Get-Input "Attribut a modifier (ex: Description, DisplayName)" "Attribu
 $Value = Get-Input "Nouvelle valeur pour '$Attr'" "Valeur" "Groupe IT"
 Set-ADGroup -Identity $Group -Replace @{ $Attr = $Value }
 Write-Host "Attribut '$Attr' du groupe '$Group' mis a jour." -ForegroundColor Green
+
+# --- VERIFICATION : on relit l'attribut modifie pour prouver la nouvelle valeur ---
+Write-Host "`n[VERIFICATION] Nouvelle valeur de l'attribut '$Attr' :" -ForegroundColor Cyan
+Get-ADGroup -Identity $Group -Properties $Attr | Select-Object Name, $Attr | Format-List
