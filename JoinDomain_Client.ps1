@@ -19,8 +19,8 @@ Write-Host "Jonction au domaine $Domain en cours..." -ForegroundColor Yellow
 
 try {
     Add-Computer -DomainName $Domain -Credential $Creds -Force
-    Write-Host "Jonction au domaine $Domain reussie. Redemarrage en cours..." -ForegroundColor Green
-    Restart-Computer -Force
+    Write-Host "Jonction au domaine $Domain reussie." -ForegroundColor Green
+    Write-Host "Lance 'Restart-Computer' quand tu es pret a redemarrer." -ForegroundColor Yellow
 } catch {
     Write-Host "Erreur lors de la jonction : $_" -ForegroundColor Red
 }
