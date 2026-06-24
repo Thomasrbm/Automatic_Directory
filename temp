@@ -1,0 +1,15 @@
+$Domain = (Get-ADDomain).NetBIOSName
+$UserLogin = "admin.test"
+
+# Permissions AdminFiles
+$Acl = Get-Acl "C:\AdminFiles"
+$Rule = New-Object System.Security.AccessControl.FileSystemAccessRule("$Domain\$UserLogin","Modify","ContainerInherit,ObjectInherit","None","Allow")
+$Acl.SetAccessRule($Rule)
+Set-Acl "C:\AdminFiles" $Acl
+
+# Permissions GenericFiles
+$Acl = Get-Acl "C:\GenericFiles"
+$Acl.SetAccessRule($Rule)
+Set-Acl "C:\GenericFiles" $Acl
+
+Write-Host "Permissions configurees." -ForegroundColor Green

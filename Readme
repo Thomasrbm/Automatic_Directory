@@ -97,6 +97,10 @@ SRV-WORKSHOP (ensuite) :
 Clients (en dernier, une fois les serveurs prêts) :
 
 .\NetworkConfig_ClientAdmin.ps1 → reboot
+
+
+mdp par defaut : TotalyN0tSecure
+
 .\JoinDomain_Client.ps1 → reboot
 
 
