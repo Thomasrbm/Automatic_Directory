@@ -1,19 +1,33 @@
 # UserCreation.ps1 - Cree un utilisateur AD
 # Parametres : AccountName, OrganisationUnit, DesiredGroup
 # Email : prenom.nom@domaine.com | UPN : email | MDP par defaut non stocke en clair
+
+
 . "$PSScriptRoot\helpers.ps1"
 Test-Admin
-$First  = Get-Input "Prenom" "Prenom"
-$Last   = Get-Input "Nom de famille" "Nom"
-$OU     = Get-Input "Organizational Unit (ex: CN=Users,DC=domolia,DC=local)" "OU"
+
+
+$First  = Get-Input "Prenom" "Prenom" "Admin"
+$Last   = Get-Input "Nom de famille" "Nom" "Test"
+$OU     = Get-Input "Organizational Unit (ex: CN=Users,DC=domolia,DC=local)" "OU" "CN=Users,DC=domolia,DC=local"
 $Group  = Get-OptionalInput "Groupe a rejoindre (optionnel)" "Groupe"
-$Login  = "$($First.ToLower()).$($Last.ToLower())"
-$Domain = (Get-ADDomain).DNSRoot
+$Login  = "$($First.ToLower()).$($Last.ToLower())" #  me tout en min  . entre les 2
+$Domain = (Get-ADDomain).DNSRoot #  get le nom du dns (domolia.local)
 $Email  = "$Login@$Domain"
+
+
 # Mot de passe par defaut encode (TotalyN0tSecure) - non stocke en clair
+# TotalyN0tSecure = mpd toujrous par defaut
+# decode le mdp avec le base 64
+# decode depuis unicode reonstuit la string
+# asplain = texte en clair stocked
 $Pass   = ConvertTo-SecureString ([System.Text.Encoding]::Unicode.GetString([System.Convert]::FromBase64String("VABvAHQAYQBsAHkATgAwAHQAUwBlAGMAdQByAGUA"))) -AsPlainText -Force
 
+
+
+
 # Splatting : parametres regroupes dans un hashtable pour la lisibilite
+# stock tous les prams 
 $UserParams = @{
     SamAccountName        = $Login
     GivenName             = $First
@@ -27,6 +41,12 @@ $UserParams = @{
     Enabled               = $true
     Path                  = $OU
 }
+
+# cree user
 New-ADUser @UserParams
+
+
 Write-Host "Utilisateur $Login cree." -ForegroundColor Green
+
+# ne secexutera pas car pas de groupe saisi
 if ($Group) { Add-ADGroupMember -Identity $Group -Members $Login; Write-Host "Ajoute au groupe $Group." -ForegroundColor Green }

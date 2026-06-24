@@ -3,9 +3,9 @@
 # Parametres : UserName, GroupName
 . "$PSScriptRoot\helpers.ps1"
 Test-Admin
-$User  = Get-Input "Nom du compte utilisateur a retirer" "Utilisateur"
+$User  = Get-Input "Nom du compte utilisateur a retirer" "Utilisateur" "admin.test"
 Assert-UserExists $User
-$Group = Get-Input "Nom du groupe" "Groupe"
+$Group = Get-Input "Nom du groupe" "Groupe" "IT"
 Assert-GroupExists $Group
 $Members = Get-ADGroupMember -Identity $Group | Select-Object -ExpandProperty SamAccountName
 if ($Members -notcontains $User) { Write-Host "'$User' n'est pas dans le groupe '$Group'. Operation bloquee." -ForegroundColor Red; exit }
