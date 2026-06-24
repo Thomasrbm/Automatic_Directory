@@ -5,7 +5,7 @@
 Test-Admin
 $First  = Get-Input "Prenom" "Prenom"
 $Last   = Get-Input "Nom de famille" "Nom"
-$OU     = Get-Input "Organizational Unit (ex: OU=Workshop,DC=domolia,DC=local)" "OU"
+$OU     = Get-Input "Organizational Unit (ex: CN=Users,DC=domolia,DC=local)" "OU"
 $Group  = Get-OptionalInput "Groupe a rejoindre (optionnel)" "Groupe"
 $Login  = "$($First.ToLower()).$($Last.ToLower())"
 $Domain = (Get-ADDomain).DNSRoot
