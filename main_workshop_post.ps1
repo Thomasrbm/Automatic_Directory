@@ -12,18 +12,29 @@ $ScriptDir = "$PSScriptRoot"
 
 Write-Host "=== CONFIGURATION POST-REBOOT SERVEUR WORKSHOP ===" -ForegroundColor Cyan
 
+
+
+
 # Etape 1 : Creation du compte worker
 Write-Host "`n[1/3] Creation du compte worker..." -ForegroundColor Yellow
 & "$ScriptDir\UserCreation.ps1"
+
+
+
 
 # Recuperation du login cree (prenom.nom) et du domaine
 $UserLogin = Get-Input "Entrez le login du compte venant d'etre cree (ex: john.doe)" "Login cree" "john.doe"
 $Account   = "$((Get-ADDomain).NetBIOSName)\$UserLogin"
 
+
+
 # Etape 2 & 3 : Dossier workshop + permissions SMB/NTFS (via le helper New-WorkFolder)
 Write-Host "`n[2/3] Creation du dossier workshop et des permissions..." -ForegroundColor Yellow
 $WorkshopFolder = Get-Input "Chemin du dossier workshop" "Dossier workshop" "C:\WorkshopFiles"
 New-WorkFolder $WorkshopFolder "WorkshopFiles" $Account
+
+
+
 
 # Etape 3 : Acces au dossier generique sur le serveur admin
 Write-Host "`n[3/3] Acces au dossier generique sur SRV-ADMIN..." -ForegroundColor Yellow
