@@ -12,6 +12,21 @@ $Domain = (Get-ADDomain).DNSRoot
 $Email  = "$Login@$Domain"
 # Mot de passe par defaut encode (TotalyN0tSecure) - non stocke en clair
 $Pass   = ConvertTo-SecureString ([System.Text.Encoding]::Unicode.GetString([System.Convert]::FromBase64String("VABvAHQAYQBsAHkATgAwAHQAUwBlAGMAdQByAGUA"))) -AsPlainText -Force
-New-ADUser -SamAccountName $Login -GivenName $First -Surname $Last -Name "$First $Last" -DisplayName "$First $Last" -EmailAddress $Email -UserPrincipalName $Email -AccountPassword $Pass -ChangePasswordAtLogon $true -Enabled $true -Path $OU
+
+# Splatting : parametres regroupes dans un hashtable pour la lisibilite
+$UserParams = @{
+    SamAccountName        = $Login
+    GivenName             = $First
+    Surname               = $Last
+    Name                  = "$First $Last"
+    DisplayName           = "$First $Last"
+    EmailAddress          = $Email
+    UserPrincipalName     = $Email
+    AccountPassword       = $Pass
+    ChangePasswordAtLogon = $true
+    Enabled               = $true
+    Path                  = $OU
+}
+New-ADUser @UserParams
 Write-Host "Utilisateur $Login cree." -ForegroundColor Green
 if ($Group) { Add-ADGroupMember -Identity $Group -Members $Login; Write-Host "Ajoute au groupe $Group." -ForegroundColor Green }

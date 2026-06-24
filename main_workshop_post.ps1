@@ -16,33 +16,19 @@ Write-Host "=== CONFIGURATION POST-REBOOT SERVEUR WORKSHOP ===" -ForegroundColor
 Write-Host "`n[1/3] Creation du compte worker..." -ForegroundColor Yellow
 & "$ScriptDir\UserCreation.ps1"
 
-# Recuperation du login cree (prenom.nom)
+# Recuperation du login cree (prenom.nom) et du domaine
 $UserLogin = Get-Input "Entrez le login du compte venant d'etre cree (ex: john.doe)" "Login cree"
-$Domain = (Get-ADDomain).NetBIOSName
+$Account   = "$((Get-ADDomain).NetBIOSName)\$UserLogin"
 
-# Etape 2 : Creation du dossier partage workshop
-Write-Host "`n[2/3] Creation du dossier workshop..." -ForegroundColor Yellow
-
+# Etape 2 & 3 : Dossier workshop + permissions SMB/NTFS (via le helper New-WorkFolder)
+Write-Host "`n[2/3] Creation du dossier workshop et des permissions..." -ForegroundColor Yellow
 $WorkshopFolder = Get-Input "Chemin du dossier workshop" "Dossier workshop" "C:\WorkshopFiles"
-New-Item -ItemType Directory -Path $WorkshopFolder -Force | Out-Null
-# Partage SMB avec l'utilisateur cree directement
-New-SmbShare -Name "WorkshopFiles" -Path $WorkshopFolder -FullAccess "$Domain\$UserLogin" -ErrorAction SilentlyContinue
-Write-Host "Dossier workshop cree et partage : $WorkshopFolder" -ForegroundColor Green
+New-WorkFolder $WorkshopFolder "WorkshopFiles" $Account
 
-# Etape 3 : Permissions NTFS pour l'utilisateur cree
-Write-Host "`n[3/3] Configuration des permissions NTFS pour $UserLogin..." -ForegroundColor Yellow
-
-# Permissions sur WorkshopFiles (lecture + modification)
-$Acl = Get-Acl $WorkshopFolder
-$Rule = New-Object System.Security.AccessControl.FileSystemAccessRule("$Domain\$UserLogin","Modify","ContainerInherit,ObjectInherit","None","Allow")
-$Acl.SetAccessRule($Rule)
-Set-Acl $WorkshopFolder $Acl
-Write-Host "Permissions WorkshopFiles configurees pour $UserLogin." -ForegroundColor Green
-
-# Acces au dossier generique sur le serveur admin
-Write-Host "`nConfiguration acces dossier generique sur SRV-ADMIN..." -ForegroundColor Yellow
+# Etape 3 : Acces au dossier generique sur le serveur admin
+Write-Host "`n[3/3] Acces au dossier generique sur SRV-ADMIN..." -ForegroundColor Yellow
 $SrvAdminIP = Get-Input "IP du SRV-ADMIN (ex: 10.12.200.163)" "IP SRV-ADMIN"
-Write-Host "Le dossier generique est accessible via : \\$SrvAdminIP\GenericFiles" -ForegroundColor Cyan
+Write-Host "Dossier generique accessible via : \\$SrvAdminIP\GenericFiles" -ForegroundColor Cyan
 Write-Host "L'administrateur SRV-ADMIN doit ajouter $UserLogin aux permissions de GenericFiles." -ForegroundColor Yellow
 
 Write-Host "`n=== SERVEUR WORKSHOP CONFIGURE ===" -ForegroundColor Green

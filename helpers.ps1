@@ -45,3 +45,15 @@ function Assert-GroupExists($groupname) {
         exit
     }
 }
+
+# Cree un dossier, le partage en SMB et accorde les droits NTFS "Modify" a un compte
+function New-WorkFolder($path, $shareName, $account) {
+    New-Item -ItemType Directory -Path $path -Force | Out-Null
+    New-SmbShare -Name $shareName -Path $path -FullAccess $account -ErrorAction SilentlyContinue | Out-Null
+    $acl  = Get-Acl $path
+    $rule = New-Object System.Security.AccessControl.FileSystemAccessRule(
+        $account, "Modify", "ContainerInherit,ObjectInherit", "None", "Allow")
+    $acl.SetAccessRule($rule)
+    Set-Acl $path $acl
+    Write-Host "Dossier '$path' cree, partage ($shareName) et droits Modify accordes a $account." -ForegroundColor Green
+}

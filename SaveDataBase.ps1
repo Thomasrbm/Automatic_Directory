@@ -7,6 +7,19 @@ $Delimiter = Get-Input "Delimiteur CSV" "Delimiteur" ";"
 $Extra     = Get-OptionalInput "Proprietes supplementaires separees par des virgules (optionnel)" "Proprietes"
 $Props     = @("SamAccountName","GivenName","Surname","EmailAddress","Enabled","DistinguishedName")
 if ($Extra) { $Props += ($Extra -split "," | ForEach-Object { $_.Trim() }) }
-Get-ADUser -Filter * -Properties $Props | Select-Object $Props | Export-Csv -Path $Path -Delimiter $Delimiter -NoTypeInformation -Encoding UTF8
-Get-ADGroup -Filter * -Properties Name,GroupScope,GroupCategory,Description | Select-Object Name,GroupScope,GroupCategory,Description | Export-Csv -Path ($Path -replace "\.csv","_groups.csv") -Delimiter $Delimiter -NoTypeInformation -Encoding UTF8
+
+# Splatting : options communes a Export-Csv regroupees
+$CsvOptions = @{ Delimiter = $Delimiter; NoTypeInformation = $true; Encoding = "UTF8" }
+
+# Export des utilisateurs
+Get-ADUser -Filter * -Properties $Props |
+    Select-Object $Props |
+    Export-Csv -Path $Path @CsvOptions
+
+# Export des groupes (fichier separe *_groups.csv)
+$GroupProps = "Name", "GroupScope", "GroupCategory", "Description"
+Get-ADGroup -Filter * -Properties $GroupProps |
+    Select-Object $GroupProps |
+    Export-Csv -Path ($Path -replace "\.csv", "_groups.csv") @CsvOptions
+
 Write-Host "Sauvegarde terminee : $Path" -ForegroundColor Green

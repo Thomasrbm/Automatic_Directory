@@ -10,7 +10,17 @@ Import-Csv -Path $Path -Delimiter $Delimiter | ForEach-Object {
     if (Get-ADUser -Filter { SamAccountName -eq $_.SamAccountName } -ErrorAction SilentlyContinue) {
         Write-Host "$($_.SamAccountName) existe deja, ignore." -ForegroundColor Yellow
     } else {
-        New-ADUser -SamAccountName $_.SamAccountName -GivenName $_.GivenName -Surname $_.Surname -EmailAddress $_.EmailAddress -AccountPassword $Password -Enabled $true -ChangePasswordAtLogon $true
+        # Splatting : parametres regroupes dans un hashtable pour la lisibilite
+        $UserParams = @{
+            SamAccountName        = $_.SamAccountName
+            GivenName             = $_.GivenName
+            Surname               = $_.Surname
+            EmailAddress          = $_.EmailAddress
+            AccountPassword       = $Password
+            Enabled               = $true
+            ChangePasswordAtLogon = $true
+        }
+        New-ADUser @UserParams
         Write-Host "$($_.SamAccountName) cree." -ForegroundColor Green
     }
 }

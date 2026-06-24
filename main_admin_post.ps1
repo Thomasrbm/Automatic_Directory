@@ -16,40 +16,15 @@ Write-Host "=== CONFIGURATION POST-REBOOT SERVEUR ADMINISTRATEUR ===" -Foregroun
 Write-Host "`n[1/3] Creation du compte administrateur..." -ForegroundColor Yellow
 & "$ScriptDir\UserCreation.ps1"
 
-# Recuperation du login cree (prenom.nom)
+# Recuperation du login cree (prenom.nom) et du domaine
 $UserLogin = Get-Input "Entrez le login du compte venant d'etre cree (ex: admin.test)" "Login cree"
-$Domain = (Get-ADDomain).NetBIOSName
+$Account   = "$((Get-ADDomain).NetBIOSName)\$UserLogin"
 
-# Etape 2 : Creation des dossiers partages
-Write-Host "`n[2/3] Creation des dossiers partages..." -ForegroundColor Yellow
-
-# Dossier administratif
-$AdminFolder = Get-Input "Chemin du dossier administratif" "Dossier admin" "C:\AdminFiles"
-New-Item -ItemType Directory -Path $AdminFolder -Force | Out-Null
-# Partage SMB avec l'utilisateur cree directement
-New-SmbShare -Name "AdminFiles" -Path $AdminFolder -FullAccess "$Domain\$UserLogin" -ErrorAction SilentlyContinue
-Write-Host "Dossier admin cree et partage : $AdminFolder" -ForegroundColor Green
-
-# Dossier generique
+# Etape 2 & 3 : Dossiers partages + permissions SMB/NTFS (via le helper New-WorkFolder)
+Write-Host "`n[2/3] Creation des dossiers partages et des permissions..." -ForegroundColor Yellow
+$AdminFolder   = Get-Input "Chemin du dossier administratif" "Dossier admin" "C:\AdminFiles"
 $GenericFolder = Get-Input "Chemin du dossier generique" "Dossier generique" "C:\GenericFiles"
-New-Item -ItemType Directory -Path $GenericFolder -Force | Out-Null
-New-SmbShare -Name "GenericFiles" -Path $GenericFolder -FullAccess "$Domain\$UserLogin" -ErrorAction SilentlyContinue
-Write-Host "Dossier generique cree et partage : $GenericFolder" -ForegroundColor Green
-
-# Etape 3 : Permissions NTFS pour l'utilisateur cree
-Write-Host "`n[3/3] Configuration des permissions NTFS pour $UserLogin..." -ForegroundColor Yellow
-
-# Permissions sur AdminFiles (lecture + modification)
-$Acl = Get-Acl $AdminFolder
-$Rule = New-Object System.Security.AccessControl.FileSystemAccessRule("$Domain\$UserLogin","Modify","ContainerInherit,ObjectInherit","None","Allow")
-$Acl.SetAccessRule($Rule)
-Set-Acl $AdminFolder $Acl
-Write-Host "Permissions AdminFiles configurees pour $UserLogin." -ForegroundColor Green
-
-# Permissions sur GenericFiles (lecture + modification)
-$Acl = Get-Acl $GenericFolder
-$Acl.SetAccessRule($Rule)
-Set-Acl $GenericFolder $Acl
-Write-Host "Permissions GenericFiles configurees pour $UserLogin." -ForegroundColor Green
+New-WorkFolder $AdminFolder   "AdminFiles"   $Account
+New-WorkFolder $GenericFolder "GenericFiles" $Account
 
 Write-Host "`n=== SERVEUR ADMINISTRATEUR CONFIGURE ===" -ForegroundColor Green
