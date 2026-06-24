@@ -11,3 +11,11 @@ $Members = Get-ADGroupMember -Identity $Group | Select-Object -ExpandProperty Sa
 if ($Members -notcontains $User) { Write-Host "'$User' n'est pas dans le groupe '$Group'. Operation bloquee." -ForegroundColor Red; exit }
 Remove-ADGroupMember -Identity $Group -Members $User -Confirm:$false
 Write-Host "'$User' retire du groupe '$Group'." -ForegroundColor Green
+
+# --- VERIFICATION : '$User' a-t-il bien disparu de la liste des membres ? ---
+Write-Host "`n[VERIFICATION] Presence de '$User' dans '$Group' :" -ForegroundColor Cyan
+if (Get-ADGroupMember -Identity $Group | Where-Object SamAccountName -eq $User) {
+    Write-Host "ECHEC : '$User' est toujours membre de '$Group'." -ForegroundColor Red
+} else {
+    Write-Host "OK : '$User' n'est plus dans '$Group'." -ForegroundColor Green
+}

@@ -13,3 +13,7 @@ $Members | ForEach-Object {
     catch { Write-Host "$($_.SamAccountName) deja present ou erreur." -ForegroundColor Yellow }
 }
 Write-Host "Importation terminee : $($Members.Count) membres traites." -ForegroundColor Green
+
+# --- VERIFICATION : on liste les membres actuels du groupe destination ---
+Write-Host "`n[VERIFICATION] Membres actuels de '$Dest' :" -ForegroundColor Cyan
+Get-ADGroupMember -Identity $Dest | Select-Object Name, SamAccountName | Format-Table -AutoSize
