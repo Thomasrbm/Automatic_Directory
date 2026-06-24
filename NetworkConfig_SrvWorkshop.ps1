@@ -14,10 +14,10 @@ Write-Host "=== CONFIGURATION RESEAU SRV-WORKSHOP ===" -ForegroundColor Cyan
 # --- ETHERNET 1 : Bridged (reseau ecole) ---
 Write-Host "`n[1/2] Configuration Ethernet 1 (Bridged - reseau ecole)..." -ForegroundColor Yellow
 
-$BridgedIP      = Get-Input "IP fixe pour Ethernet 1 Bridged (ex: 10.12.200.164)" "IP Bridged"
+$BridgedIP      = Get-Input "IP fixe pour Ethernet 1 Bridged (ex: 10.12.200.164)" "IP Bridged" "10.12.200.164"
 $BridgedMask    = Get-Input "Masque sous-reseau (ex: 255.0.0.0)" "Masque Bridged" "255.0.0.0"
-$BridgedGW      = Get-Input "Passerelle par defaut (ex: 10.12.254.254)" "Passerelle"
-$AdminBridgedIP = Get-Input "IP Bridged du SRV-ADMIN (DNS principal, ex: 10.12.200.163)" "IP SRV-ADMIN"
+$BridgedGW      = Get-Input "Passerelle par defaut (ex: 10.12.254.254)" "Passerelle" "10.12.254.254"
+$AdminBridgedIP = Get-Input "IP Bridged du SRV-ADMIN (DNS principal, ex: 10.12.200.163)" "IP SRV-ADMIN" "10.12.200.163"
 
 # Application de la config Bridged
 New-NetIPAddress -InterfaceAlias "Ethernet" -IPAddress $BridgedIP -PrefixLength 8 -DefaultGateway $BridgedGW -ErrorAction SilentlyContinue

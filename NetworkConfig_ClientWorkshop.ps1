@@ -15,7 +15,7 @@ Write-Host "`nConfiguration Ethernet 1 (Internal - reseau workshop)..." -Foregro
 
 $ClientIP           = Get-Input "IP fixe pour ce client (ex: 192.168.20.50)" "IP Client" "192.168.20.50"
 $SrvWorkshopIP      = Get-Input "IP interne du SRV-WORKSHOP (ex: 192.168.20.1)" "IP SRV-WORKSHOP" "192.168.20.1"
-$SrvAdminBridgedIP  = Get-Input "IP Bridged du SRV-ADMIN / DNS principal (ex: 10.12.200.163)" "DNS Principal"
+$SrvAdminBridgedIP  = Get-Input "IP Bridged du SRV-ADMIN / DNS principal (ex: 10.12.200.163)" "DNS Principal" "10.12.200.163"
 
 # Application de la config
 New-NetIPAddress -InterfaceAlias "Ethernet" -IPAddress $ClientIP -PrefixLength 24 -ErrorAction SilentlyContinue
