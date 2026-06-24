@@ -19,5 +19,5 @@ New-SmbShare -Name "AdminFiles" -Path "C:\AdminFiles" -FullAccess "DOMOLIA\Admin
 New-SmbShare -Name "GenericFiles" -Path "C:\GenericFiles" -FullAccess "DOMOLIA\Admins du domaine" -ReadAccess "Utilisateurs authentifiés"
 
 
-New-SmbShare -Name "AdminFiles" -Path "C:\AdminFiles" -FullAccess "DOMOLIA\admin.test"
-New-SmbShare -Name "GenericFiles" -Path "C:\GenericFiles" -FullAccess "DOMOLIA\admin.test"
+Grant-SmbShareAccess -Name "AdminFiles" -AccountName "DOMOLIA\admin.test" -AccessRight Full -Force
+Grant-SmbShareAccess -Name "GenericFiles" -AccountName "DOMOLIA\admin.test" -AccessRight Full -Force
