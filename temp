@@ -17,3 +17,7 @@ Write-Host "Permissions configurees." -ForegroundColor Green
 
 New-SmbShare -Name "AdminFiles" -Path "C:\AdminFiles" -FullAccess "DOMOLIA\Admins du domaine" -ReadAccess "Utilisateurs authentifiés"
 New-SmbShare -Name "GenericFiles" -Path "C:\GenericFiles" -FullAccess "DOMOLIA\Admins du domaine" -ReadAccess "Utilisateurs authentifiés"
+
+
+New-SmbShare -Name "AdminFiles" -Path "C:\AdminFiles" -FullAccess "DOMOLIA\admin.test"
+New-SmbShare -Name "GenericFiles" -Path "C:\GenericFiles" -FullAccess "DOMOLIA\admin.test"
