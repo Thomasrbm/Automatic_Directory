@@ -7,15 +7,11 @@
 . "$PSScriptRoot\helpers.ps1"
 Test-Admin
 
-Write-Host "=== JONCTION AU DOMAINE ===" -ForegroundColor Cyan
-
 # Popup : Demande du nom du domaine
 $Domain = Get-Input "Entrez le nom du domaine a rejoindre (ex: domolia.local)" "Domaine" "domolia.local"
 
 # Demande des credentials du Domain Admin
 $Creds = Get-Credential -Message "Entrez les credentials d'un administrateur du domaine $Domain"
-
-Write-Host "Jonction au domaine $Domain en cours..." -ForegroundColor Yellow
 
 try {
     Add-Computer -DomainName $Domain -Credential $Creds -Force
