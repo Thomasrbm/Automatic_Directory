@@ -26,4 +26,6 @@ $MachineName = Get-Input "Nom de la machine" "Nom" "CLIENT-ADMIN"
 Rename-Computer -NewName $MachineName -Force
 
 Write-Host "`n=== RESEAU CLIENT-ADMIN CONFIGURE ===" -ForegroundColor Green
-Write-Host "Quand vous etes pret, lancez manuellement : Restart-Computer" -ForegroundColor Cyan
+Write-Host "Redemarrage automatique dans 10 secondes (necessaire apres le renommage)..." -ForegroundColor Magenta
+Start-Sleep -Seconds 10
+Restart-Computer -Force
