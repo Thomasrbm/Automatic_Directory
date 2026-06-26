@@ -38,7 +38,7 @@ New-WorkFolder $WorkshopFolder "WorkshopFiles" $Account
 
 # Etape 3 : Acces au dossier generique sur le serveur admin
 Write-Host "`n[3/3] Acces au dossier generique sur SRV-ADMIN..." -ForegroundColor Yellow
-$SrvAdminIP = Get-Input "IP du SRV-ADMIN (ex: 10.12.200.163)" "IP SRV-ADMIN" "10.12.200.163"
+$SrvAdminIP = Get-Input "IP du SRV-ADMIN (ex: 10.0.2.10)" "IP SRV-ADMIN" "10.0.2.10"
 Write-Host "Dossier generique accessible via : \\$SrvAdminIP\GenericFiles" -ForegroundColor Cyan
 Write-Host "L'administrateur SRV-ADMIN doit ajouter $UserLogin aux permissions de GenericFiles." -ForegroundColor Yellow
 

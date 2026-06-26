@@ -1,8 +1,8 @@
 # =============================================================
 # NetworkConfig_ClientWorkshop.ps1
-# Description : Configure le reseau du CLIENT-WORKSHOP (workstation)
-#               - Ethernet 1 (Internal) : IP fixe reseau workshop interne
-#               - DNS : pointe vers SRV-ADMIN via reseau bridged du SRV-WORKSHOP
+# Description : Configure le reseau du CLIENT-WORKSHOP (mono-carte, Reseau NAT VirtualBox 'ADLab')
+#               - IP fixe sur 10.0.2.0/24
+#               - DNS : pointe vers SRV-ADMIN (indispensable pour rejoindre le domaine)
 # =============================================================
 
 . "$PSScriptRoot\helpers.ps1"
@@ -10,19 +10,33 @@ Test-Admin
 
 Write-Host "=== CONFIGURATION RESEAU CLIENT-WORKSHOP ===" -ForegroundColor Cyan
 
-# --- ETHERNET 1 : Internal (reseau workshop interne) ---
-Write-Host "`nConfiguration Ethernet 1 (Internal - reseau workshop)..." -ForegroundColor Yellow
+# Une seule carte, branchee sur le Reseau NAT 'ADLab'
+Write-Host "`nCartes reseau detectees :" -ForegroundColor Yellow
+Get-NetAdapter | Format-Table Name, InterfaceDescription, Status -AutoSize | Out-Host
+$DefaultNic = (Get-NetAdapter | Where-Object Status -eq 'Up' | Select-Object -First 1).Name
+$Nic = Get-Input "Nom de la carte reseau (NAT)" "Carte" $DefaultNic
 
-$ClientIP           = Get-Input "IP fixe pour ce client (ex: 192.168.20.50)" "IP Client" "192.168.20.50"
-$SrvWorkshopIP      = Get-Input "IP interne du SRV-WORKSHOP (ex: 192.168.20.1)" "IP SRV-WORKSHOP" "192.168.20.1"
-$SrvAdminBridgedIP  = Get-Input "IP Bridged du SRV-ADMIN / DNS principal (ex: 10.12.200.163)" "DNS Principal" "10.12.200.163"
+$IP    = Get-Input "IP fixe de ce client" "IP" "10.0.2.51"
+$GW    = Get-Input "Passerelle (NAT VirtualBox)" "Passerelle" "10.0.2.1"
+$DNS   = Get-Input "DNS = IP du SRV-ADMIN" "DNS (SRV-ADMIN)" "10.0.2.10"
 
-# Application de la config
-New-NetIPAddress -InterfaceAlias "Ethernet" -IPAddress $ClientIP -PrefixLength 24 -ErrorAction SilentlyContinue
-Set-DnsClientServerAddress -InterfaceAlias "Ethernet" -ServerAddresses $SrvAdminBridgedIP
-Write-Host "Ethernet configure : $ClientIP (DNS -> $SrvAdminBridgedIP)" -ForegroundColor Green
+# Nettoyage de l'ancienne config (DHCP / IP / route) puis application
+Set-NetIPInterface  -InterfaceAlias $Nic -Dhcp Disabled -ErrorAction SilentlyContinue
+Remove-NetRoute     -InterfaceAlias $Nic -DestinationPrefix "0.0.0.0/0" -Confirm:$false -ErrorAction SilentlyContinue
+Remove-NetIPAddress -InterfaceAlias $Nic -AddressFamily IPv4 -Confirm:$false -ErrorAction SilentlyContinue
 
-# Renommage de la machine
+New-NetIPAddress -InterfaceAlias $Nic -IPAddress $IP -PrefixLength 24 -DefaultGateway $GW
+Set-DnsClientServerAddress -InterfaceAlias $Nic -ServerAddresses $DNS
+Write-Host "Configure : $IP/24  GW $GW  DNS $DNS" -ForegroundColor Green
+
+# Test internet + joignabilite du DC admin (qui resout le domaine)
+Write-Host "`nTest internet (8.8.8.8) et SRV-ADMIN ($DNS)..." -ForegroundColor Yellow
+if (Test-Connection 8.8.8.8 -Count 2 -Quiet) { Write-Host "Internet OK." -ForegroundColor Green }
+else { Write-Host "Pas de reponse de 8.8.8.8. Verifie le Reseau NAT 'ADLab'." -ForegroundColor Red }
+if (Test-Connection $DNS -Count 2 -Quiet) { Write-Host "SRV-ADMIN joignable." -ForegroundColor Green }
+else { Write-Host "SRV-ADMIN injoignable : demarre-le et verifie son IP ($DNS)." -ForegroundColor Red }
+
+# Renommage + redemarrage automatique
 $MachineName = Get-Input "Nom de la machine" "Nom" "CLIENT-WORKSHOP"
 Rename-Computer -NewName $MachineName -Force
 
