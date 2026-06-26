@@ -26,5 +26,5 @@ Write-Host "Ethernet configure : $ClientIP (DNS -> $SrvAdminBridgedIP)" -Foregro
 $MachineName = Get-Input "Nom de la machine" "Nom" "CLIENT-WORKSHOP"
 Rename-Computer -NewName $MachineName -Force
 
-Write-Host "`n=== RESEAU CLIENT-WORKSHOP CONFIGURE - REDEMARRAGE REQUIS ===" -ForegroundColor Green
-Restart-Computer -Force
+Write-Host "`n=== RESEAU CLIENT-WORKSHOP CONFIGURE ===" -ForegroundColor Green
+Write-Host "Quand vous etes pret, lancez manuellement : Restart-Computer" -ForegroundColor Cyan

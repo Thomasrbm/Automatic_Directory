@@ -75,7 +75,7 @@ function New-WorkFolder($path, $shareName, $account) {
     $acl  = Get-Acl $path
     # dams page security (double verrou)
     # nouvel obj, class access rule de security
-    $rule = N  New-Object System.Security.AccessControl.FileSystemAccessRule(
+    $rule = New-Object System.Security.AccessControl.FileSystemAccessRule(
       $account,                          # QUI    → DOMOLIA\admin
       "Modify",                          # QUOI   → droit de modifier
       "ContainerInherit,ObjectInherit",  # OÙ     → + sous-dossiers + fichiers

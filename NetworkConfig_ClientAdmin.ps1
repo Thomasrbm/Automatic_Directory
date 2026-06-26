@@ -25,5 +25,5 @@ Write-Host "Ethernet configure : $ClientIP (DNS -> $SrvAdminIP)" -ForegroundColo
 $MachineName = Get-Input "Nom de la machine" "Nom" "CLIENT-ADMIN"
 Rename-Computer -NewName $MachineName -Force
 
-Write-Host "`n=== RESEAU CLIENT-ADMIN CONFIGURE - REDEMARRAGE REQUIS ===" -ForegroundColor Green
-Restart-Computer -Force
+Write-Host "`n=== RESEAU CLIENT-ADMIN CONFIGURE ===" -ForegroundColor Green
+Write-Host "Quand vous etes pret, lancez manuellement : Restart-Computer" -ForegroundColor Cyan
