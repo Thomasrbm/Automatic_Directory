@@ -14,9 +14,11 @@ Test-Admin
 $ScriptDir = "$PSScriptRoot"
 
 # Etape 1 : Installation AD DS
+Write-Host "[1/2] Installation AD DS (1-3 min, sans barre)..." -ForegroundColor Cyan
 & "$ScriptDir\ADPackageInstallor.ps1"
 
 # Etape 2 : Rejoindre la foret existante
+Write-Host "[2/2] Connexion a la foret : reponds aux fenetres popup (Alt+Tab si cachees)..." -ForegroundColor Cyan
 & "$ScriptDir\JoinExistingDomainController.ps1"
 
 # Si le join a echoue (code de sortie != 0), on s'arrete : pas de promotion = pas de reboot
