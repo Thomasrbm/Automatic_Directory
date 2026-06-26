@@ -28,6 +28,7 @@ $DSRM = Read-Host "Mot de passe DSRM (Safe Mode)" -AsSecureString
 # Pas de -NoRebootOnCompletion : sur succes, la cmdlet redemarre le serveur elle-meme.
 try {
     Import-Module ADDSDeployment -ErrorAction SilentlyContinue
+    Write-Host "Promotion en cours (plusieurs minutes, le serveur redemarrera tout seul)..." -ForegroundColor Yellow
     Install-ADDSDomainController -DomainName $Domain -Credential $Creds -SafeModeAdministratorPassword $DSRM -InstallDns -Force -ErrorAction Stop
     exit 0
 }

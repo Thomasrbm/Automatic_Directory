@@ -12,6 +12,8 @@ $ScriptDir = "$PSScriptRoot"
 . "$ScriptDir\helpers.ps1"
 Test-Admin
 
+Write-Host "Reponds aux fenetres popup au fur et a mesure (Alt+Tab si elles sont cachees)." -ForegroundColor Cyan
+
 # Etape 1 : Configuration des forwarders DNS (resolution des noms externes -> internet)
 # Le DC est serveur DNS pour tout le domaine. Sans forwarder il ne resout pas
 # les noms publics (google.com...), ce qui donne l'impression de "plus d'internet".

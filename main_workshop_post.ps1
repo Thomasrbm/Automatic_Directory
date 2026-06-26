@@ -10,6 +10,8 @@
 Test-Admin
 $ScriptDir = "$PSScriptRoot"
 
+Write-Host "Reponds aux fenetres popup au fur et a mesure (Alt+Tab si elles sont cachees)." -ForegroundColor Cyan
+
 # Etape 1 : Creation du compte worker
 & "$ScriptDir\UserCreation.ps1"
 
