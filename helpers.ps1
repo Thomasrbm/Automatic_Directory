@@ -7,6 +7,11 @@
 # Chargement de l'assembly pour les popups
 Add-Type -AssemblyName Microsoft.VisualBasic
 
+# Desactive la barre de progression : sinon Install-WindowsFeature / promotions AD /
+# Invoke-WebRequest "gelent" l'affichage (surtout dans PowerShell ISE) et on doit faire Ctrl+C.
+# Le travail se fait quand meme ; on supprime juste le rendu qui bloque.
+$ProgressPreference = 'SilentlyContinue'
+
 # Verifie que le script est lance en tant qu'administrateur
 function Test-Admin {
     # [] un type ,  Securiy.  ...  chemin vers la classe,  :: methode
