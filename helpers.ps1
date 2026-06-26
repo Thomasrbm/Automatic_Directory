@@ -92,3 +92,21 @@ function New-WorkFolder($path, $shareName, $account) {
     Set-Acl $path $acl
     Write-Host "Dossier '$path' cree, partage ($shareName) et droits Modify accordes a $account." -ForegroundColor Green
 }
+
+# Configure la carte reseau (Reseau NAT), applique l'IP statique, renomme la machine et redemarre
+function Set-StaticNetwork($IP, $Gateway, $Dns, $NewName) {
+    # Une seule carte (Reseau NAT) : detection automatique
+    $Nic = (Get-NetAdapter | Where-Object { $_.Status -eq 'Up' } | Select-Object -First 1).Name
+    if (-not $Nic) { $Nic = (Get-NetAdapter | Select-Object -First 1).Name }
+
+    # Nettoyage de l'ancienne config (DHCP / IP / route) puis application
+    Set-NetIPInterface  -InterfaceAlias $Nic -Dhcp Disabled -ErrorAction SilentlyContinue
+    Remove-NetRoute     -InterfaceAlias $Nic -DestinationPrefix "0.0.0.0/0" -Confirm:$false -ErrorAction SilentlyContinue
+    Remove-NetIPAddress -InterfaceAlias $Nic -AddressFamily IPv4 -Confirm:$false -ErrorAction SilentlyContinue
+
+    New-NetIPAddress -InterfaceAlias $Nic -IPAddress $IP -PrefixLength 24 -DefaultGateway $Gateway
+    Set-DnsClientServerAddress -InterfaceAlias $Nic -ServerAddresses $Dns
+
+    Rename-Computer -NewName $NewName -Force
+    Restart-Computer -Force
+}
