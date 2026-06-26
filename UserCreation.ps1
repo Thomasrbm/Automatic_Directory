@@ -12,7 +12,7 @@ $Last   = Get-Input "Nom de famille" "Nom" "Test"
 $OU     = Get-Input "Organizational Unit (ex: CN=Users,DC=domolia,DC=local)" "OU" "CN=Users,DC=domolia,DC=local"
 $Group  = Get-OptionalInput "Groupe a rejoindre (optionnel)" "Groupe"
 $Login  = "$($First.ToLower()).$($Last.ToLower())" #  me tout en min  . entre les 2
-$Domain = (Get-ADDomain).DNSRoot #  get le nom du dns (domolia.local)
+$Domain = "domolia.local" #  get le nom du dns (domolia.local)
 $Email  = "$Login@$Domain"
 
 

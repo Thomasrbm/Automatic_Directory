@@ -8,11 +8,11 @@
 # =============================================================
 
 
-# recup les ft 
+# recup les ft
+$ScriptDir = "$PSScriptRoot"
 . "$ScriptDir\helpers.ps1"
 
 Test-Admin
-$ScriptDir = "$PSScriptRoot"
 
 
 
@@ -21,8 +21,16 @@ Write-Host "=== CONFIGURATION POST-REBOOT SERVEUR ADMINISTRATEUR ===" -Foregroun
 
 
 
-# Etape 1 : Creation du compte administrateur
-Write-Host "`n[1/3] Creation du compte administrateur..." -ForegroundColor Yellow
+# Etape 1 : Configuration des forwarders DNS (resolution des noms externes -> internet)
+# Le DC est serveur DNS pour tout le domaine. Sans forwarder il ne resout pas
+# les noms publics (google.com...), ce qui donne l'impression de "plus d'internet".
+Write-Host "`n[1/4] Configuration des forwarders DNS..." -ForegroundColor Yellow
+$Forwarder = Get-Input "DNS forwarder externe (DNS de l'ecole ou public, ex: 8.8.8.8)" "DNS Forwarder" "8.8.8.8"
+Add-DnsServerForwarder -IPAddress $Forwarder -ErrorAction SilentlyContinue
+Write-Host "Forwarder DNS configure : $Forwarder" -ForegroundColor Green
+
+# Etape 2 : Creation du compte administrateur
+Write-Host "`n[2/4] Creation du compte administrateur..." -ForegroundColor Yellow
 & "$ScriptDir\UserCreation.ps1"
 
 
@@ -35,8 +43,8 @@ $Account   = "$((Get-ADDomain).NetBIOSName)\$UserLogin"
 
 
 
-# Etape 2 & 3 : Dossiers partages + permissions SMB/NTFS (via le helper New-WorkFolder)
-Write-Host "`n[2/3] Creation des dossiers partages et des permissions..." -ForegroundColor Yellow
+# Etape 3 & 4 : Dossiers partages + permissions SMB/NTFS (via le helper New-WorkFolder)
+Write-Host "`n[3/4] Creation des dossiers partages et des permissions..." -ForegroundColor Yellow
 $AdminFolder   = Get-Input "Chemin du dossier administratif" "Dossier admin" "C:\AdminFiles"
 $GenericFolder = Get-Input "Chemin du dossier generique" "Dossier generique" "C:\GenericFiles"
 New-WorkFolder $AdminFolder   "AdminFiles"   $Account

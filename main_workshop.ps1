@@ -23,4 +23,20 @@ Write-Host "`n[1/2] Installation AD DS..." -ForegroundColor Yellow
 Write-Host "`n[2/2] Connexion a la foret existante..." -ForegroundColor Yellow
 & "$ScriptDir\JoinExistingDomainController.ps1"
 
-Write-Host "`nLe serveur va redemarrer. Relancez main_workshop_post.ps1 apres le redemarrage." -ForegroundColor Magenta
+# Si le join a echoue (code de sortie != 0), on s'arrete : pas de reboot sur un serveur a moitie configure
+if ($LASTEXITCODE -ne 0) {
+    Write-Host "`nLe join de la foret a echoue. Corrigez le probleme (DNS, credentials, reseau) puis relancez main_workshop.ps1." -ForegroundColor Red
+    exit 1
+}
+
+# Relance automatique de main_workshop_post.ps1 apres le redemarrage (cle RunOnce)
+# RunOnce est execute une seule fois a la prochaine ouverture de session.
+# On relance PowerShell en elevation (-Verb RunAs) car le script post necessite les droits admin.
+$PostScript = "$ScriptDir\main_workshop_post.ps1"
+$RunOnceCmd = "powershell.exe -ExecutionPolicy Bypass -NoExit -Command `"Start-Process powershell.exe -Verb RunAs -ArgumentList '-ExecutionPolicy','Bypass','-NoExit','-File','$PostScript'`""
+Set-ItemProperty -Path "HKLM:\Software\Microsoft\Windows\CurrentVersion\RunOnce" -Name "WorkshopPost" -Value $RunOnceCmd
+Write-Host "Relance automatique de main_workshop_post.ps1 programmee apres le redemarrage." -ForegroundColor Green
+
+Write-Host "`nLe serveur va redemarrer dans 10 secondes..." -ForegroundColor Magenta
+Start-Sleep -Seconds 10
+Restart-Computer -Force

@@ -38,5 +38,8 @@ Write-Host "Ethernet 2 configure : $InternalIP" -ForegroundColor Green
 $ServerName = Get-Input "Nom du serveur" "Nom" "SRV-WORKSHOP"
 Rename-Computer -NewName $ServerName -Force
 
-Write-Host "`n=== RESEAU SRV-WORKSHOP CONFIGURE - REDEMARRAGE REQUIS ===" -ForegroundColor Green
-Restart-Computer -Force
+Write-Host "`n=== RESEAU SRV-WORKSHOP CONFIGURE ===" -ForegroundColor Green
+Write-Host "Verifiez la connectivite avant de redemarrer :" -ForegroundColor Yellow
+Write-Host "   ping 8.8.8.8      (teste la passerelle / le routage)" -ForegroundColor Yellow
+Write-Host "   ping google.com   (teste le DNS)" -ForegroundColor Yellow
+Write-Host "Quand vous etes pret, lancez manuellement : Restart-Computer" -ForegroundColor Cyan

@@ -24,7 +24,7 @@ Write-Host "`n[1/3] Creation du compte worker..." -ForegroundColor Yellow
 
 # Recuperation du login cree (prenom.nom) et du domaine
 $UserLogin = Get-Input "Entrez le login du compte venant d'etre cree (ex: john.doe)" "Login cree" "john.doe"
-$Account   = "$((Get-ADDomain).NetBIOSName)\$UserLogin"
+$Account   = "DOMOLIA\$UserLogin"
 
 
 
