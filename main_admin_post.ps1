@@ -12,6 +12,9 @@ $ScriptDir = "$PSScriptRoot"
 . "$ScriptDir\helpers.ps1"
 Test-Admin
 
+# Demarre les services AD (le DC doit etre operationnel avant de creer comptes/dossiers)
+Start-ADServices
+
 Write-Host "Reponds aux fenetres popup au fur et a mesure (Alt+Tab si elles sont cachees)." -ForegroundColor Cyan
 
 # Etape 1 : Configuration des forwarders DNS (resolution des noms externes -> internet)
