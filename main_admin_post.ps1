@@ -13,7 +13,7 @@ $ScriptDir = "$PSScriptRoot"
 Test-Admin
 
 # Demarre les services AD (le DC doit etre operationnel avant de creer comptes/dossiers)
-Start-ADServices
+# Start-ADServices
 
 Write-Host "Reponds aux fenetres popup au fur et a mesure (Alt+Tab si elles sont cachees)." -ForegroundColor Cyan
 
@@ -30,7 +30,10 @@ Add-DnsServerForwarder -IPAddress $Forwarder -ErrorAction SilentlyContinue
 $UserLogin = Get-Input "Entrez le login du compte venant d'etre cree (ex: admin.test)" "Login cree" "admin.test"
 $Account   = "$((Get-ADDomain).NetBIOSName)\$UserLogin"
 
-# Etape 3 & 4 : Dossiers partages + permissions SMB/NTFS (via le helper New-WorkFolder)
+# Etape 3 : Autorise ce user non-admin a ouvrir une session sur les DC (locale + RDP)
+Grant-DCLogon $UserLogin
+
+# Etape 4 & 5 : Dossiers partages + permissions SMB/NTFS (via le helper New-WorkFolder)
 $AdminFolder   = Get-Input "Chemin du dossier administratif" "Dossier admin" "C:\AdminFiles"
 $GenericFolder = Get-Input "Chemin du dossier generique" "Dossier generique" "C:\GenericFiles"
 New-WorkFolder $AdminFolder   "AdminFiles"   $Account

@@ -14,8 +14,12 @@ $ScriptDir = "$PSScriptRoot"
 Write-Host "[1/2] Installation AD DS..." -ForegroundColor Cyan
 & "$ScriptDir\ADPackageInstallor.ps1"
 
+
+
 # Etape 2 : Creation de la foret
 Write-Host "[2/2] Creation de la foret : reponds aux fenetres popup (Alt+Tab si cachees)..." -ForegroundColor Cyan
 & "$ScriptDir\CreateNewForestDomainController.ps1"
+
+
 
 Write-Host "Le serveur va redemarrer. Relancez main_admin_post.ps1 apres le redemarrage." -ForegroundColor Magenta
