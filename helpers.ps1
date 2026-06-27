@@ -161,12 +161,8 @@ function Grant-DCLogon($username) {
     Write-Host "Droits de connexion (locale + RDP) accordes a $username sur les controleurs de domaine." -ForegroundColor Green
 }
 
-# Demarre et fiabilise les services AD (evite les blocages : service non demarre, heure desynchro)
-# function Start-ADServices {
-#     foreach ($s in "W32Time","Netlogon","NTDS","ADWS","DNS","Kdc") {
-#         Set-Service   -Name $s -StartupType Automatic -ErrorAction SilentlyContinue
-#         Start-Service -Name $s -ErrorAction SilentlyContinue
-#     }
-#     # resynchronise l'heure (Kerberos) pour eviter les blocages / boucles de replication
-#     w32tm /resync /force 2>$null
-# }
+# Transforme une saisie "a, b, c" en tableau de proprietes nettoyees (sans espaces)
+# Mutualise le decoupage utilise par Read/Save (proprietes AD separees par virgules)
+function Get-PropsList($csv) {
+    return $csv -split "," | ForEach-Object { $_.Trim() }
+}

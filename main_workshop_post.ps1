@@ -10,9 +10,6 @@
 Test-Admin
 $ScriptDir = "$PSScriptRoot"
 
-# Demarre les services AD (le DC doit etre operationnel avant de creer comptes/dossiers)
-# Start-ADServices
-
 Write-Host "Reponds aux fenetres popup au fur et a mesure (Alt+Tab si elles sont cachees)." -ForegroundColor Cyan
 
 # Etape 1 : Creation du compte worker

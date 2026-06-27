@@ -3,7 +3,7 @@
 . "$PSScriptRoot\helpers.ps1"
 $Filter = Get-OptionalInput "Attributs a recuperer separes par virgules (vide = tout)" "Filtre"
 if ($Filter) {
-    $Props = $Filter -split "," | ForEach-Object { $_.Trim() }
+    $Props = Get-PropsList $Filter
     Get-ADUser -Filter * -Properties $Props | Select-Object $Props | Format-Table -AutoSize
 } else {
     Get-ADUser -Filter * -Properties * | Format-List

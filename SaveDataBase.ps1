@@ -6,7 +6,7 @@ $Path      = Get-Input "Chemin du fichier CSV de sortie" "Chemin" "C:\AD_Backup.
 $Delimiter = Get-Input "Delimiteur CSV" "Delimiteur" ";"
 $Extra     = Get-OptionalInput "Proprietes supplementaires separees par des virgules (optionnel)" "Proprietes"
 $Props     = @("SamAccountName","GivenName","Surname","EmailAddress","Enabled","DistinguishedName")
-if ($Extra) { $Props += ($Extra -split "," | ForEach-Object { $_.Trim() }) }
+if ($Extra) { $Props += (Get-PropsList $Extra) }
 
 # Splatting : options communes a Export-Csv regroupees
 $CsvOptions = @{ Delimiter = $Delimiter; NoTypeInformation = $true; Encoding = "UTF8" }
