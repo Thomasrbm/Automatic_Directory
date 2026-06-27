@@ -131,8 +131,11 @@ function Grant-DCLogon($username) {
     # GptTmpl.inf est encode en Unicode (UTF-16) : on conserve ce format
     Set-Content $Inf $Lines -Encoding Unicode
     # Incremente la version de la GPO (sinon les DC ne rejouent pas la strategie)
-    $Gpt = "\\$Dom\SYSVOL\$Dom\Policies\$Guid\GPT.ini"
-    $Ver = [int](((Get-Content $Gpt) -match "Version=") -replace '\D', '')
+    # On ne prend QUE la ligne "Version=" (ancree en debut de ligne, 1 seule) pour
+    # eviter un tableau qui ferait planter le cast [int].
+    $Gpt  = "\\$Dom\SYSVOL\$Dom\Policies\$Guid\GPT.ini"
+    $Line = Get-Content $Gpt | Where-Object { $_ -match '^Version=' } | Select-Object -First 1
+    $Ver  = [int]($Line -replace '\D', '')
     (Get-Content $Gpt) -replace "Version=\d+", "Version=$($Ver + 1)" | Set-Content $Gpt
     # Applique tout de suite sur ce DC ; l'autre DC l'aura par replication SYSVOL
     gpupdate /force | Out-Null
