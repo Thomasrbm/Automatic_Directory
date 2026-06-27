@@ -27,7 +27,7 @@ Add-DnsServerForwarder -IPAddress $Forwarder -ErrorAction SilentlyContinue
 & "$ScriptDir\UserCreation.ps1"
 
 # Recuperation du login cree (prenom.nom) et du domaine
-$UserLogin = Get-Input "Entrez le login du compte venant d'etre cree (ex: admin.test)" "Login cree" "admin.test"
+$UserLogin = Get-Input "Entrez le login du compte venant d'etre cree (ex: user.admin)" "Login cree" "user.admin"
 $Account   = "$((Get-ADDomain).NetBIOSName)\$UserLogin"
 
 # Etape 3 : Autorise ce user non-admin a ouvrir une session sur les DC (locale + RDP)

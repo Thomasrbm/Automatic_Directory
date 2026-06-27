@@ -19,7 +19,7 @@ Write-Host "Reponds aux fenetres popup au fur et a mesure (Alt+Tab si elles sont
 & "$ScriptDir\UserCreation.ps1"
 
 # Recuperation du login cree (prenom.nom) et du domaine
-$UserLogin = Get-Input "Entrez le login du compte venant d'etre cree (ex: john.doe)" "Login cree" "john.doe"
+$UserLogin = Get-Input "Entrez le login du compte venant d'etre cree (ex: user.worker)" "Login cree" "user.worker"
 $Account   = "DOMOLIA\$UserLogin"
 
 # Etape 2 : Autorise ce user non-admin a ouvrir une session sur les DC (locale + RDP)
