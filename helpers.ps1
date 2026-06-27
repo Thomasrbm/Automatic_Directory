@@ -7,11 +7,6 @@
 # Chargement de l'assembly pour les popups
 Add-Type -AssemblyName Microsoft.VisualBasic
 
-# Desactive la barre de progression : sinon Install-WindowsFeature / promotions AD /
-# Invoke-WebRequest "gelent" l'affichage (surtout dans PowerShell ISE) et on doit faire Ctrl+C.
-# Le travail se fait quand meme ; on supprime juste le rendu qui bloque.
-$ProgressPreference = 'SilentlyContinue'
-
 # Verifie que le script est lance en tant qu'administrateur
 function Test-Admin {
     # [] un type ,  Securiy.  ...  chemin vers la classe,  :: methode
@@ -91,4 +86,14 @@ function New-WorkFolder($path, $shareName, $account) {
     # applique sur le disque
     Set-Acl $path $acl
     Write-Host "Dossier '$path' cree, partage ($shareName) et droits Modify accordes a $account." -ForegroundColor Green
+}
+
+# Demarre et fiabilise les services AD (evite les blocages : service non demarre, heure desynchro)
+function Start-ADServices {
+    foreach ($s in "W32Time","Netlogon","NTDS","ADWS","DNS","Kdc") {
+        Set-Service   -Name $s -StartupType Automatic -ErrorAction SilentlyContinue
+        Start-Service -Name $s -ErrorAction SilentlyContinue
+    }
+    # resynchronise l'heure (Kerberos) pour eviter les blocages / boucles de replication
+    w32tm /resync /force 2>$null
 }
