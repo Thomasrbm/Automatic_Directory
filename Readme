@@ -146,3 +146,23 @@ sauf pour les mdps : Read-Host -AsSecureString
 
 
 ---------------  PowerShell ISE
+
+
+
+
+
+
+
+-------------------- etapes
+
+
+
+les 2 mains + mains post
+
+addusetogenericfiles
+
+
+depuis admin : setmdp.ps1
+
+
+se co avec user.admin et mdp = TotalyN0tSecure
