@@ -7,8 +7,8 @@
 Test-Admin
 
 
-$First  = Get-Input "Prenom" "Prenom" "Admin"
-$Last   = Get-Input "Nom de famille" "Nom" "Test"
+$First  = Get-Input "Prenom" "Prenom" "User"
+$Last   = Get-Input "Nom de famille (Admin sur le serveur admin, Worker sur le worker)" "Nom" "Admin"
 $OU     = Get-Input "Organizational Unit (ex: CN=Users,DC=domolia,DC=local)" "OU" "CN=Users,DC=domolia,DC=local"
 $Group  = Get-OptionalInput "Groupe a rejoindre (optionnel)" "Groupe"
 $Login  = "$($First.ToLower()).$($Last.ToLower())" #  me tout en min  . entre les 2
