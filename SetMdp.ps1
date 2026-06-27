@@ -14,7 +14,7 @@ $Login = Get-Input "Login de l'utilisateur (ex: user.admin)" "Login" "user.admin
 Assert-UserExists $Login
 
 # Nouveau mot de passe : sans symbole = pas de souci de clavier AZERTY/QWERTY en RDP
-$Pass = Get-Input "Nouveau mot de passe (majuscule + minuscules + chiffres)" "Mot de passe" "Azerty123"
+$Pass = Get-Input "Nouveau mot de passe (majuscule + minuscules + chiffres)" "Mot de passe" "Bonjour123**"
 
 # Reinitialise le mot de passe et enleve le changement force a la connexion
 Set-ADAccountPassword -Identity $Login -Reset -NewPassword (ConvertTo-SecureString $Pass -AsPlainText -Force)
