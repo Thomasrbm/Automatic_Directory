@@ -11,7 +11,7 @@
 $ScriptDir = "$PSScriptRoot"
 
 # Etape 1 : Installation AD DS
-Write-Host "[1/2] Installation AD DS (1-3 min, sans barre)..." -ForegroundColor Cyan
+Write-Host "[1/2] Installation AD DS..." -ForegroundColor Cyan
 & "$ScriptDir\ADPackageInstallor.ps1"
 
 # Etape 2 : Creation de la foret
