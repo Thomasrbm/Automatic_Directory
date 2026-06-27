@@ -29,7 +29,8 @@ Grant-DCLogon $Login
 $sid = (Get-ADUser $Login).SID.Value
 secedit /export /cfg C:\c.cfg /quiet
 $line = (Select-String "SeRemoteInteractiveLogonRight" C:\c.cfg).Line
-if ($line -match [regex]::Escape($sid)) {
+# secedit affiche soit le SID, soit le nom de compte resolu -> on teste les deux
+if ($line -match [regex]::Escape($sid) -or $line -match [regex]::Escape($Login)) {
     Write-Host "OK : $Login a le droit RDP actif sur ce DC. Connexion possible avec le mot de passe defini." -ForegroundColor Green
 } else {
     Write-Host "ATTENTION : le droit RDP n'apparait pas encore actif sur ce DC (replication GPO en cours ?). Relance ce script dans 1 min." -ForegroundColor Yellow

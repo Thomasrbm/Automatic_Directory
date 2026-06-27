@@ -109,6 +109,10 @@ function Grant-FolderAccess($path, $shareName, $account) {
 # Attribution des droits utilisateur). La GPO se replique par SYSVOL aux 2 DC.
 function Grant-DCLogon($username) {
     Assert-UserExists $username
+    # Ajoute l'utilisateur au groupe "Remote Desktop Users". Sans ca, meme avec
+    # le droit RDP ci-dessous, le listener RDP-Tcp refuse la connexion (erreur
+    # "compte non autorise a ouvrir une session a distance").
+    Add-ADGroupMember -Identity "Remote Desktop Users" -Members $username -ErrorAction SilentlyContinue
     # SID de l'utilisateur, au format attendu par le fichier INF : *<SID>
     $Sid  = "*" + (Get-ADUser $username).SID.Value
     # Default Domain Controllers Policy : son GUID est fixe et identique partout
