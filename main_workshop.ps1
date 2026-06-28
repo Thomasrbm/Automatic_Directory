@@ -14,13 +14,18 @@ Test-Admin
 $ScriptDir = "$PSScriptRoot"
 
 # Etape 1 : Desactivation du pare-feu (evite les blocages reseau : SMB, ping, replication)
-Write-Host "[1/3] Desactivation du pare-feu..." -ForegroundColor Cyan
+Write-Host "[1/4] Desactivation du pare-feu..." -ForegroundColor Cyan
 & "$ScriptDir\DisableFirewall.ps1"
 
-# Etape 2 : Installation AD DS
-Write-Host "[2/3] Installation AD DS..." -ForegroundColor Cyan
+# Etape 2 : DNS vers SRV-ADMIN (serveur DNS du domaine) pour resoudre et rejoindre la foret
+Write-Host "[2/4] DNS vers SRV-ADMIN..." -ForegroundColor Cyan
+$SrvAdminIP = Get-Input "IP du SRV-ADMIN (serveur DNS du domaine)" "IP SRV-ADMIN" "10.0.0.4"
+Set-Dns $SrvAdminIP
+
+# Etape 3 : Installation AD DS
+Write-Host "[3/4] Installation AD DS..." -ForegroundColor Cyan
 & "$ScriptDir\ADPackageInstallor.ps1"
 
-# Etape 3 : Rejoindre la foret existante (la promotion redemarre le serveur elle-meme)
-Write-Host "[3/3] Connexion a la foret (la promotion redemarre le serveur)..." -ForegroundColor Cyan
+# Etape 4 : Rejoindre la foret existante (la promotion redemarre le serveur elle-meme)
+Write-Host "[4/4] Connexion a la foret (la promotion redemarre le serveur)..." -ForegroundColor Cyan
 & "$ScriptDir\JoinExistingDomainController.ps1"
