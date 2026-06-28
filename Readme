@@ -172,3 +172,41 @@ se co avec user.admin et mdp = TotalyN0tSecure
 mstc 
 
 localhost
+
+
+
+
+--------------  USE FILES ------------
+
+
+Aucun parametre en ligne de commande : on lance .\Script.ps1 et on repond aux popups.
+La preuve s'affiche toute seule a la fin de chaque script. Lancer en admin sur SRV-ADMIN.
+
+Installe AD DS            : ADPackageInstallor.ps1
+Cree la foret + 1er DC    : main_admin.ps1 -> reboot -> main_admin_post.ps1
+Rejoint la foret (2e DC)  : main_workshop.ps1 -> reboot -> main_workshop_post.ps1
+
+Sauvegarde la base (CSV)  : SaveDataBase.ps1
+Recharge la base (CSV)    : LoadDataBase.ps1
+Infos de tous les users   : ReadDataBaseInformation.ps1
+
+Cree un user              : UserCreation.ps1
+Infos d'un user           : ReadUserInformation.ps1
+Modifie un attribut user  : EditUserAttribute.ps1
+Reset mot de passe user   : ResetUserPassword.ps1
+
+Cree un groupe            : CreateGroup.ps1
+Cree groupe distribution  : CreateDistributionGroup.ps1
+Modifie un groupe         : ModifyGroup.ps1
+Ajoute user a un groupe   : AddUserToGroup.ps1
+Retire user d'un groupe   : RemoveUserToGroup.ps1
+Liste membres d'un groupe : ListUserInGroup.ps1
+Importe membres grp->grp  : ImportGroup.ps1
+Infos d'un groupe         : ReadGroupInformation.ps1
+Infos de tous les groupes : ReadEveryGroupInformation.ps1
+
+Renomme la machine        : RenameMachine.ps1
+Coupe le pare-feu         : DisableFirewall.ps1
+Acces GenericFiles a user : AddUserToGenericFiles.ps1
+Prepare un user au RDP    : FixRdpUser.ps1
+Joint le client au domaine: JoinDomain_Client.ps1

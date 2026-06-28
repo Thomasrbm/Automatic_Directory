@@ -10,14 +10,18 @@
 
 $ScriptDir = "$PSScriptRoot"
 
-# Etape 1 : Installation AD DS
-Write-Host "[1/2] Installation AD DS..." -ForegroundColor Cyan
+# Etape 1 : Desactivation du pare-feu (evite les blocages reseau : SMB, ping, replication)
+Write-Host "[1/3] Desactivation du pare-feu..." -ForegroundColor Cyan
+& "$ScriptDir\DisableFirewall.ps1"
+
+# Etape 2 : Installation AD DS
+Write-Host "[2/3] Installation AD DS..." -ForegroundColor Cyan
 & "$ScriptDir\ADPackageInstallor.ps1"
 
 
 
-# Etape 2 : Creation de la foret
-Write-Host "[2/2] Creation de la foret : reponds aux fenetres popup (Alt+Tab si cachees)..." -ForegroundColor Cyan
+# Etape 3 : Creation de la foret
+Write-Host "[3/3] Creation de la foret : reponds aux fenetres popup (Alt+Tab si cachees)..." -ForegroundColor Cyan
 & "$ScriptDir\CreateNewForestDomainController.ps1"
 
 

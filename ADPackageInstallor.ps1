@@ -7,3 +7,7 @@ Test-Admin
 # name = quelle fonction, ad - devient controlleur de domaine
 # incluede ...  = pour avoir les outils de gestion (booleen), sinon peut rien manager
 Install-WindowsFeature -Name AD-Domain-Services -IncludeManagementTools
+
+# --- VERIFICATION : la fonctionnalite AD DS est-elle bien installee ? ---
+Write-Host "`n[VERIFICATION] Etat de la fonctionnalite AD DS :" -ForegroundColor Cyan
+Get-WindowsFeature AD-Domain-Services | Select-Object Name, InstallState | Format-Table -AutoSize

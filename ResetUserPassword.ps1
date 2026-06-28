@@ -5,13 +5,20 @@ Test-Admin
 $User = Get-Input "Nom du compte utilisateur" "Compte" "admin.test"
 Assert-UserExists $User
 $Pass = Read-Host "Nouveau mot de passe pour $User" -AsSecureString
+
+# --- AVANT : etat du mot de passe avant la reinitialisation (preuve visuelle) ---
+Write-Host "`n[AVANT] Etat du mot de passe avant reset :" -ForegroundColor Cyan
+Get-ADUser -Identity $User -Properties PasswordLastSet, pwdLastSet |
+    Select-Object SamAccountName, PasswordLastSet,
+        @{ Name = "DoitChangerAuLogon"; Expression = { $_.pwdLastSet -eq 0 } } | Format-List
+
 Set-ADAccountPassword -Identity $User -NewPassword $Pass -Reset
 Set-ADUser -Identity $User -ChangePasswordAtLogon $true
 Write-Host "Mot de passe de $User reinitialise." -ForegroundColor Green
 
-# --- VERIFICATION : on relit l'etat du mot de passe (on ne peut pas afficher le mdp) ---
+# --- APRES : on relit l'etat du mot de passe (on ne peut pas afficher le mdp) ---
 # PasswordLastSet vide + pwdLastSet=0 => le compte devra changer son mdp au prochain logon
-Write-Host "`n[VERIFICATION] Etat du mot de passe du compte :" -ForegroundColor Cyan
+Write-Host "`n[APRES] Etat du mot de passe du compte :" -ForegroundColor Cyan
 Get-ADUser -Identity $User -Properties PasswordLastSet, pwdLastSet |
     Select-Object SamAccountName, PasswordLastSet,
         @{ Name = "DoitChangerAuLogon"; Expression = { $_.pwdLastSet -eq 0 } } | Format-List

@@ -50,3 +50,8 @@ Write-Host "Utilisateur $Login cree." -ForegroundColor Green
 
 # ne secexutera pas car pas de groupe saisi
 if ($Group) { Add-ADGroupMember -Identity $Group -Members $Login; Write-Host "Ajoute au groupe $Group." -ForegroundColor Green }
+
+# --- VERIFICATION : on relit le compte dans AD pour prouver qu'il existe ---
+Write-Host "`n[VERIFICATION] Lecture du compte cree :" -ForegroundColor Cyan
+Get-ADUser -Identity $Login -Properties EmailAddress, Enabled |
+    Select-Object SamAccountName, Name, EmailAddress, Enabled | Format-List
