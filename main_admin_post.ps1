@@ -19,11 +19,7 @@ Write-Host "`n[VERIFICATION] Foret / domaine crees :" -ForegroundColor Cyan
 Get-ADForest | Select-Object Name, ForestMode, DomainNamingMaster | Format-List
 Get-ADDomain | Select-Object Name, NetBIOSName, DomainMode, PDCEmulator | Format-List
 
-# Etape 1a : DNS de ce DC = lui-meme (pour resoudre son propre domaine domolia.local)
-Write-Host "DNS de ce DC -> lui-meme (127.0.0.1)..." -ForegroundColor Cyan
-Set-Dns "127.0.0.1"
-
-# Etape 1b : Configuration des forwarders DNS (resolution des noms externes -> internet)
+# Etape 1 : Configuration des forwarders DNS (resolution des noms externes -> internet)
 # Le DC est serveur DNS pour tout le domaine. Sans forwarder il ne resout pas
 # les noms publics (google.com...), ce qui donne l'impression de "plus d'internet".
 $Forwarder = Get-Input "DNS forwarder externe (DNS de l'ecole ou public, ex: 8.8.8.8)" "DNS Forwarder" "8.8.8.8"

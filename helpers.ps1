@@ -166,11 +166,3 @@ function Grant-DCLogon($username) {
 function Get-PropsList($csv) {
     return $csv -split "," | ForEach-Object { $_.Trim() }
 }
-
-# Definit le(s) serveur(s) DNS sur la carte reseau active (detecte la carte "Up",
-# evite de coder en dur "Ethernet"). Necessite des droits admin.
-function Set-Dns($servers) {
-    $eth = (Get-NetAdapter | Where-Object Status -eq 'Up' | Select-Object -First 1).InterfaceAlias
-    Set-DnsClientServerAddress -InterfaceAlias $eth -ServerAddresses $servers
-    Write-Host "DNS de la carte '$eth' regle sur : $($servers -join ', ')" -ForegroundColor Green
-}
