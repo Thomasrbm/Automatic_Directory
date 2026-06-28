@@ -23,8 +23,7 @@ Set-ADAccountPassword -Identity $Login -Reset -NewPassword (ConvertTo-SecureStri
 Set-ADUser -Identity $Login -ChangePasswordAtLogon $false
 
 # 2. droit RDP sur les DC + gpupdate (factorise dans le helper)
-# TEST TEMPORAIRE : appel desactive pour verifier que sans lui le RDP echoue
-# Grant-DCLogon $Login
+Grant-DCLogon $Login
 
 # 3. verification : le SID doit apparaitre dans le droit RDP effectif de CE serveur
 $sid = (Get-ADUser $Login).SID.Value

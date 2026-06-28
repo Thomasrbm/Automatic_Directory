@@ -24,8 +24,7 @@ $UserLogin = Get-Input "Entrez le login du compte venant d'etre cree (ex: user.w
 $Account   = "DOMOLIA\$UserLogin"
 
 # Etape 2 : Autorise ce user non-admin a ouvrir une session sur les DC (locale + RDP)
-# TEST TEMPORAIRE : appel desactive pour verifier que sans lui le RDP echoue
-# Grant-DCLogon $UserLogin
+Grant-DCLogon $UserLogin
 
 # Etape 3 & 4 : Dossier workshop + permissions SMB/NTFS (via le helper New-WorkFolder)
 $WorkshopFolder = Get-Input "Chemin du dossier workshop" "Dossier workshop" "C:\WorkshopFiles"
