@@ -30,7 +30,11 @@ $Account   = "$((Get-ADDomain).NetBIOSName)\$UserLogin"
 # Etape 3 : Autorise ce user non-admin a ouvrir une session sur les DC (locale + RDP)
 Grant-DCLogon $UserLogin
 
-# Etape 4 & 5 : Dossiers partages + permissions SMB/NTFS (via le helper New-WorkFolder)
+# Etape 4 : Leve "changer le mdp au 1er logon" (mis par UserCreation, exigence sujet)
+# pour que ce compte puisse se connecter direct en RDP (le NLA bloque sinon).
+Set-ADUser -Identity $UserLogin -ChangePasswordAtLogon $false
+
+# Etape 5 & 6 : Dossiers partages + permissions SMB/NTFS (via le helper New-WorkFolder)
 $AdminFolder   = Get-Input "Chemin du dossier administratif" "Dossier admin" "C:\AdminFiles"
 $GenericFolder = Get-Input "Chemin du dossier generique" "Dossier generique" "C:\GenericFiles"
 New-WorkFolder $AdminFolder   "AdminFiles"   $Account

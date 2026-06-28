@@ -22,7 +22,11 @@ $Account   = "DOMOLIA\$UserLogin"
 # Etape 2 : Autorise ce user non-admin a ouvrir une session sur les DC (locale + RDP)
 Grant-DCLogon $UserLogin
 
-# Etape 3 & 4 : Dossier workshop + permissions SMB/NTFS (via le helper New-WorkFolder)
+# Etape 3 : Leve "changer le mdp au 1er logon" (mis par UserCreation, exigence sujet)
+# pour que ce compte puisse se connecter direct en RDP (le NLA bloque sinon).
+Set-ADUser -Identity $UserLogin -ChangePasswordAtLogon $false
+
+# Etape 4 & 5 : Dossier workshop + permissions SMB/NTFS (via le helper New-WorkFolder)
 $WorkshopFolder = Get-Input "Chemin du dossier workshop" "Dossier workshop" "C:\WorkshopFiles"
 New-WorkFolder $WorkshopFolder "WorkshopFiles" $Account
 
