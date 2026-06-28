@@ -14,11 +14,6 @@ Test-Admin
 
 Write-Host "Reponds aux fenetres popup au fur et a mesure (Alt+Tab si elles sont cachees)." -ForegroundColor Cyan
 
-# --- PREUVE : la foret est bien creee et ce serveur est promu DC ---
-Write-Host "`n[VERIFICATION] Foret / domaine crees :" -ForegroundColor Cyan
-Get-ADForest | Select-Object Name, ForestMode, DomainNamingMaster | Format-List
-Get-ADDomain | Select-Object Name, NetBIOSName, DomainMode, PDCEmulator | Format-List
-
 # Etape 1 : Configuration des forwarders DNS (resolution des noms externes -> internet)
 # Le DC est serveur DNS pour tout le domaine. Sans forwarder il ne resout pas
 # les noms publics (google.com...), ce qui donne l'impression de "plus d'internet".
