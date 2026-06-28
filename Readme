@@ -216,11 +216,11 @@ Importe membres grp->grp  : ImportGroup.ps1
 Infos d'un groupe         : ReadGroupInformation.ps1
 Infos de tous les groupes : ReadEveryGroupInformation.ps1
 
-Renomme la machine        : RenameMachine.ps1
 Coupe le pare-feu         : DisableFirewall.ps1
-Acces GenericFiles a user : AddUserToGenericFiles.ps1
+Acces GenericFiles a user : AddUserToGenericFiles.ps1 (sur SRV-ADMIN, apres creation de user.worker)
 Prepare un user au RDP    : FixRdpUser.ps1
 Joint le client au domaine: JoinDomain_Client.ps1
+Test auto de tous les ops : tester.ps1 (sur un DC, hors main)
 
 
 
@@ -233,3 +233,7 @@ Joint le client au domaine: JoinDomain_Client.ps1
 
 
 ------------------- EVAL -------------------
+
+
+les 2 mains
+
