@@ -6,6 +6,17 @@ Refaire tout ActiveDiscovery  sur des vm fresh  mais avec des scripts powershell
 
 
 
+
+Set-DnsClientServerAddress -InterfaceAlias "Ethernet" -ServerAddresses 168.63.129.16
+
+
+
+
+
+
+
+
+
 ----------------------------------
 
 
@@ -210,3 +221,15 @@ Coupe le pare-feu         : DisableFirewall.ps1
 Acces GenericFiles a user : AddUserToGenericFiles.ps1
 Prepare un user au RDP    : FixRdpUser.ps1
 Joint le client au domaine: JoinDomain_Client.ps1
+
+
+
+
+
+
+
+
+
+
+
+------------------- EVAL -------------------
