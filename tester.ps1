@@ -25,9 +25,12 @@ $Pass = ConvertTo-SecureString "Bonjour123**" -AsPlainText -Force
 
 Write-Host "==== TEST AUTOMATIQUE DES SCRIPTS DU SUJET ====" -ForegroundColor Magenta
 
-# Nettoyage prealable (si un test precedent a laisse des restes)
-foreach ($g in "TestGroup", "TestGroup2", "TestDistri") { Remove-ADGroup $g -Confirm:$false -ErrorAction SilentlyContinue }
-Remove-ADUser test.user -Confirm:$false -ErrorAction SilentlyContinue
+# Nettoyage prealable (silencieux : on verifie l'existence avant de supprimer,
+# sinon le 1er lancement affiche des erreurs rouges "object not found" inutiles)
+foreach ($g in "TestGroup", "TestGroup2", "TestDistri") {
+    if (Get-ADGroup -Filter "Name -eq '$g'" -ErrorAction SilentlyContinue) { Remove-ADGroup $g -Confirm:$false }
+}
+if (Get-ADUser -Filter "SamAccountName -eq 'test.user'" -ErrorAction SilentlyContinue) { Remove-ADUser test.user -Confirm:$false }
 
 # [1] UserCreation
 Write-Host "`n[1] UserCreation -> test.user" -ForegroundColor Cyan
@@ -123,10 +126,12 @@ Write-Host "`n[15] ReadDataBaseInformation" -ForegroundColor Cyan
 Get-ADUser -Filter * | Select-Object SamAccountName, Enabled | Format-Table -AutoSize
 Pause-Test
 
-# Nettoyage final des objets de test
+# Nettoyage final des objets de test (silencieux, on verifie avant de supprimer)
 Write-Host "`n==== NETTOYAGE ====" -ForegroundColor Magenta
-foreach ($g in "TestGroup", "TestGroup2", "TestDistri") { Remove-ADGroup $g -Confirm:$false -ErrorAction SilentlyContinue }
-Remove-ADUser test.user -Confirm:$false -ErrorAction SilentlyContinue
+foreach ($g in "TestGroup", "TestGroup2", "TestDistri") {
+    if (Get-ADGroup -Filter "Name -eq '$g'" -ErrorAction SilentlyContinue) { Remove-ADGroup $g -Confirm:$false }
+}
+if (Get-ADUser -Filter "SamAccountName -eq 'test.user'" -ErrorAction SilentlyContinue) { Remove-ADUser test.user -Confirm:$false }
 Remove-Item C:\test_db.csv -ErrorAction SilentlyContinue
 Write-Host "Objets de test supprimes. TOUS LES TESTS EXECUTES." -ForegroundColor Green
 Write-Host "Journal complet : C:\test_resultats.txt" -ForegroundColor Green
