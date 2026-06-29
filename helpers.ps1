@@ -104,65 +104,61 @@ function Grant-FolderAccess($path, $shareName, $account) {
 }
 
 # Autorise un utilisateur de domaine NON-admin a ouvrir une session sur les DC
-# (locale + Bureau a distance / RDP). Par defaut un DC refuse les users normaux.
-# On modifie la Default Domain Controllers Policy (equivalent GUI : GPMC ->
-# Attribution des droits utilisateur). La GPO se replique par SYSVOL aux 2 DC.
 function Grant-DCLogon($username) {
     Assert-UserExists $username
-    # Ajoute l'utilisateur au groupe "Remote Desktop Users". Sans ca, meme avec
-    # le droit RDP ci-dessous, le listener RDP-Tcp refuse la connexion (erreur
-    # "compte non autorise a ouvrir une session a distance").
+    # Ajoute l'utilisateur au groupe "Remote Desktop Users".
     Add-ADGroupMember -Identity "Remote Desktop Users" -Members $username -ErrorAction SilentlyContinue
-    # SID de l'utilisateur, au format attendu par le fichier INF : *<SID>
+    # SID (Security Identifier) *<SID>   
     $Sid  = "*" + (Get-ADUser $username).SID.Value
     # Default Domain Controllers Policy : son GUID est fixe et identique partout
-    $Dom  = (Get-ADDomain).DNSRoot
-    $Guid = "{6AC1786C-016F-11D2-945F-00C04fB984F9}"
-    $Inf  = "\\$Dom\SYSVOL\$Dom\Policies\$Guid\MACHINE\Microsoft\Windows NT\SecEdit\GptTmpl.inf"
-    # Sauvegarde de securite avant toute modification
+    $Dom  = (Get-ADDomain).DNSRoot  # Recup domaine courrant
+    $Guid = "{6AC1786C-016F-11D2-945F-00C04fB984F9}" # id de la GPO "Default Domain Controllers Policy"  => permet de cibler les GPO de droit des DC
+    $Inf  = "\\$Dom\SYSVOL\$Dom\Policies\$Guid\MACHINE\Microsoft\Windows NT\SecEdit\GptTmpl.inf" # chemin du fichier des droit user applique aux DC
+    # save de safety avant modif
     Copy-Item $Inf "$Inf.bak" -Force
-    # Droits a accorder. Si la ligne doit etre creee, on y met TOUJOURS les
-    # Administrateurs (S-1-5-32-544) pour ne jamais se verrouiller hors du DC.
-    #   SeInteractiveLogonRight       = Ouvrir une session localement
-    #   SeRemoteInteractiveLogonRight = Ouvrir une session via Bureau a distance
+    # droit  de connexion sur une DC 
     $Rights = @{
-        "SeInteractiveLogonRight"       = "*S-1-5-32-544"
-        "SeRemoteInteractiveLogonRight" = "*S-1-5-32-544"
+        "SeInteractiveLogonRight"       = "*S-1-5-32-544"  # = droit physique sur le pc
+        "SeRemoteInteractiveLogonRight" = "*S-1-5-32-544" # = droit remote desktop
     }
     $Lines = Get-Content $Inf
+    # itere sur chaque droit dans les 2 lignes de rights, sur chaque ligne
     foreach ($Right in $Rights.Keys) {
-        # cherche la ligne "SeXxx = ..." dans le fichier
+        # contient ^Right au debut, \s* (plusieurs space tab ou pas apres, =)   = chope le num de ligne
         $Idx = ($Lines | Select-String "^$Right\s*=").LineNumber
         if ($Idx) {
             # la ligne existe : on ajoute notre SID s'il n'y est pas deja
-            $i = $Idx - 1
+            $i = $Idx - 1 # converti en idx tableua (commence a 0)
+
+            # ajoute le SID current a la ligne found sinon le lecteur interpretera les* en repetition,  le - en "plage" => esapce separe tout par des \ et donc 
+            # li litterallement
             if ($Lines[$i] -notmatch [regex]::Escape($Sid)) {
                 $Lines[$i] = $Lines[$i].TrimEnd() + ",$Sid"
             }
         } else {
             # la ligne n'existe pas : on la cree (Administrateurs + notre user)
-            # juste sous l'entete de section [Privilege Rights]
-            $Sec   = ($Lines | Select-String "^\[Privilege Rights\]").LineNumber
-            $New   = "$Right = $($Rights[$Right]),$Sid"
+            $Sec   = ($Lines | Select-String "^\[Privilege Rights\]").LineNumber # trouve la ligne des droits
+            $New   = "$Right = $($Rights[$Right]),$Sid" # ajoute les 2 lignes
+            # garde les lignes avant $Lines[0..($Sec-1)]   puis nos lgines puis les lignes apres , Count-1(pour tab)
             $Lines = $Lines[0..($Sec-1)] + $New + $Lines[$Sec..($Lines.Count-1)]
         }
     }
-    # GptTmpl.inf est encode en Unicode (UTF-16) : on conserve ce format
+    # GptTmpl.inf doit etre enregister en UTF 16 sinon corrompu.
     Set-Content $Inf $Lines -Encoding Unicode
-    # Incremente la version de la GPO (sinon les DC ne rejouent pas la strategie)
-    # On ne prend QUE la ligne "Version=" (ancree en debut de ligne, 1 seule) pour
-    # eviter un tableau qui ferait planter le cast [int].
+    # fichier de metadonne de la GPO (car si pas de modif de version, pas de reinterpretation)
     $Gpt  = "\\$Dom\SYSVOL\$Dom\Policies\$Guid\GPT.ini"
+    # choppe la ligne version
     $Line = Get-Content $Gpt | Where-Object { $_ -match '^Version=' } | Select-Object -First 1
+    # garde enleve tout char non numerique
     $Ver  = [int]($Line -replace '\D', '')
+    # remplace par donc la lgine par la version du dessus
     (Get-Content $Gpt) -replace "Version=\d+", "Version=$($Ver + 1)" | Set-Content $Gpt
-    # Applique tout de suite sur ce DC ; l'autre DC l'aura par replication SYSVOL
+    # exec
     gpupdate /force | Out-Null
     Write-Host "Droits de connexion (locale + RDP) accordes a $username sur les controleurs de domaine." -ForegroundColor Green
 }
 
-# Transforme une saisie "a, b, c" en tableau de proprietes nettoyees (sans espaces)
-# Mutualise le decoupage utilise par Read/Save (proprietes AD separees par virgules)
+# affichage : transforme une saisie "a, b, c" en tableau de proprietes nettoyees (sans espaces)
 function Get-PropsList($csv) {
     return $csv -split "," | ForEach-Object { $_.Trim() }
 }

@@ -20,6 +20,12 @@ Write-Host "Reponds aux fenetres popup au fur et a mesure (Alt+Tab si elles sont
 $Forwarder = Get-Input "DNS forwarder externe (DNS de l'ecole ou public, ex: 8.8.8.8)" "DNS Forwarder" "8.8.8.8"
 Add-DnsServerForwarder -IPAddress $Forwarder -ErrorAction SilentlyContinue
 
+#  = si un pc demande un dns que tu connais pas, renvoit vers google
+
+
+
+
+
 # Etape 2 : Creation du compte administrateur
 & "$ScriptDir\UserCreation.ps1"
 

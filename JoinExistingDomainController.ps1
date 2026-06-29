@@ -18,9 +18,9 @@ Install-ADDSDomainController `
     -DatabasePath "C:\Windows\NTDS" `
     -LogPath "C:\Windows\NTDS" `
     -SysvolPath "C:\Windows\SYSVOL" `
-    -NoGlobalCatalog:$false `
+    -NoGlobalCatalog:$false ` # GC = partage info sur les autres dc
     -CreateDnsDelegation:$false `
-    -CriticalReplicationOnly:$false `
+    -CriticalReplicationOnly:$false ` # replication complete 
     -InstallDns:$true `
     -NoRebootOnCompletion:$false `
     -Force:$true

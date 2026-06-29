@@ -25,6 +25,7 @@ $Pass   = ConvertTo-SecureString ([System.Text.Encoding]::Unicode.GetString([Sys
 
 
 
+# hashtable
 
 # Splatting : parametres regroupes dans un hashtable pour la lisibilite
 # stock tous les prams 
