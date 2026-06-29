@@ -248,7 +248,6 @@ Importe membres grp->grp  : ImportGroup.ps1
 Infos d'un groupe         : ReadGroupInformation.ps1
 Infos de tous les groupes : ReadEveryGroupInformation.ps1
 
-Coupe le pare-feu         : DisableFirewall.ps1
 Acces GenericFiles a user : AddUserToGenericFiles.ps1 (sur SRV-ADMIN, apres creation de user.worker)
 Prepare un user au RDP    : FixRdpUser.ps1
 Joint le client au domaine: JoinDomain_Client.ps1
@@ -266,6 +265,10 @@ Reset complet (pre-AD)    : reset.ps1 (relancer apres chaque reboot ; worker AVA
 
 
 ------------------- EVAL -------------------
+
+
+nltest /sc_verify:domolia.local
+
 
 
 les 2 mains
