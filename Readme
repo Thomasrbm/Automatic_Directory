@@ -285,9 +285,11 @@ TotalyN0tSecure  = mdp
 
 
 
-./reset 
 
-cahnger mdp sur azure
+Distribution groupe  ====> ne gere pas de permission, juste pour envoyer mails/messages groupe 
+pas d acces a autre chose pas de droit d accesses etc. 
 
 
-pour admin creer un nouveau compte admin 
+
+
+

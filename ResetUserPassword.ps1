@@ -7,7 +7,7 @@ Test-Admin
 
 $User = Get-Input "Nom du compte utilisateur" "Compte" "admin.test"
 Assert-UserExists $User
-$Pass = Read-Host "Nouveau mot de passe pour $User" -AsSecureString
+$Pass = Get-PasswordInput "Nouveau mot de passe pour $User" "Reinitialisation mot de passe"
 
 
 # --- AVANT : etat du mot de passe avant la reinitialisation (preuve visuelle) ---
@@ -21,12 +21,13 @@ Get-ADUser -Identity $User -Properties PasswordLastSet, pwdLastSet |
 
 
 # change le mdp
-# emelve le fait de modif le mdp au premier log 
+# force le changement du mot de passe a la premiere connexion (exige par le bareme)
 Set-ADAccountPassword -Identity $User -NewPassword $Pass -Reset
-Set-ADUser -Identity $User -ChangePasswordAtLogon $false
+Set-ADUser -Identity $User -ChangePasswordAtLogon $true
 
 
-Write-Host "Mot de passe de $User reinitialise (utilisable immediatement)." -ForegroundColor Green
+Write-Host "Mot de passe de $User reinitialise (changement force a la premiere connexion)." -ForegroundColor Green
+# NB : pour autoriser la connexion RDP ensuite, lancer FixRdpUser.ps1 qui leve la contrainte (NLA)
 
 
 

@@ -4,8 +4,10 @@
 #               A inclure avec : . "$PSScriptRoot\helpers.ps1"
 # =============================================================
 
-# Chargement de l'assembly pour les popups
-Add-Type -AssemblyName Microsoft.VisualBasic
+# Chargement des assembly pour les popups
+Add-Type -AssemblyName Microsoft.VisualBasic   # InputBox (saisie texte)
+Add-Type -AssemblyName System.Windows.Forms    # fenetre pour le pop-up mot de passe masque
+Add-Type -AssemblyName System.Drawing          # taille/position des controles
 
 # Verifie que le script est lance en tant qu'administrateur
 function Test-Admin {
@@ -34,6 +36,47 @@ function Get-Input($message, $title, $default = "") {
 # peut etre vide, pas de if vide
 function Get-OptionalInput($message, $title, $default = "") {
     return [Microsoft.VisualBasic.Interaction]::InputBox($message, $title, $default)
+}
+
+# Affiche un POP-UP avec un champ MASQUE et retourne le mot de passe en SecureString.
+# Respecte la regle "demander toute information via un pop-up" sans afficher le mdp en clair
+# (contrairement a InputBox). Construit une petite fenetre Windows Forms.
+function Get-PasswordInput($message, $title) {
+    $form = New-Object System.Windows.Forms.Form
+    $form.Text = $title
+    $form.Size = New-Object System.Drawing.Size(380, 170)
+    $form.StartPosition = "CenterScreen"
+    $form.TopMost = $true   # passe au premier plan
+
+    # Libelle : la question posee
+    $label = New-Object System.Windows.Forms.Label
+    $label.Text = $message
+    $label.AutoSize = $true
+    $label.Location = New-Object System.Drawing.Point(12, 15)
+    $form.Controls.Add($label)
+
+    # Champ de saisie masque (les caracteres sont remplaces par des points)
+    $box = New-Object System.Windows.Forms.TextBox
+    $box.UseSystemPasswordChar = $true
+    $box.Location = New-Object System.Drawing.Point(12, 45)
+    $box.Size = New-Object System.Drawing.Size(345, 25)
+    $form.Controls.Add($box)
+
+    # Bouton OK (+ touche Entree valide la fenetre)
+    $ok = New-Object System.Windows.Forms.Button
+    $ok.Text = "OK"
+    $ok.DialogResult = [System.Windows.Forms.DialogResult]::OK
+    $ok.Location = New-Object System.Drawing.Point(280, 85)
+    $form.Controls.Add($ok)
+    $form.AcceptButton = $ok
+
+    # Affichage : si annule ou vide -> on bloque (champ requis)
+    if ($form.ShowDialog() -ne [System.Windows.Forms.DialogResult]::OK -or [string]::IsNullOrEmpty($box.Text)) {
+        Write-Host "Mot de passe '$title' requis. Abandon." -ForegroundColor Red
+        exit
+    }
+    # Conversion en SecureString (le mdp n'est jamais conserve en clair au-dela de cette ligne)
+    return (ConvertTo-SecureString $box.Text -AsPlainText -Force)
 }
 
 # Verifie qu'un utilisateur AD existe, quitte sinon

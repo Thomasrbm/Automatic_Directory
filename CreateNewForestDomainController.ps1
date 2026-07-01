@@ -13,32 +13,38 @@ $Netbios = Get-Input "Nom NetBIOS (ex: DOMOLIA)" "NetBIOS" "DOMOLIA"
 
 
 
-# a windows, on voit pas ce qu on ecrit
-# met das le terminal
-
-# DSRM = Directory Services Restore Mode  (mdp de sauvetage)
-$DSRM    = Read-Host "Mot de passe DSRM" -AsSecureString
+# DSRM = Directory Services Restore Mode (mdp de sauvetage)
+# Saisi via un pop-up masque (le mdp ne s'affiche pas en clair, contrairement au terminal)
+$DSRM    = Get-PasswordInput "Mot de passe DSRM (Directory Services Restore Mode)" "Mot de passe DSRM"
 
 
-
-
-# windows,  install la foret,  netbios = nom court, dns pour traduire les nom dans l ad (ip)
-# Commande identique a celle generee par l'assistant GUI (Server Manager -> Afficher le script)
 Write-Host "Creation de la foret en cours (plusieurs minutes, le serveur redemarrera tout seul)..." -ForegroundColor Yellow
 
 
-Import-Module ADDSDeployment # import les cmdlet d install
+Import-Module ADDSDeployment   # importe les cmdlets d'installation
 
+# Commande identique a celle generee par l'assistant GUI (Server Manager -> Afficher le script).
+# IMPORTANT : avec la continuation de ligne (backtick), AUCUN commentaire ne peut suivre le backtick,
+#             sinon la continuation casse et le script plante. Les explications sont donc ici, en legende :
+#   -DomainNetbiosName            : nom court (NetBIOS) du domaine
+#   -SafeModeAdministratorPassword: mot de passe DSRM (saisi plus haut)
+#   -ForestMode / -DomainMode     : "WinThreshold" = derniere maj des forets Windows (2016) avec ses features
+#   -DatabasePath                 : NT Directory Services Database
+#   -LogPath                      : log NTDS ; la synchro ecrit d'abord ici puis met a jour
+#   -SysvolPath                   : dossier partage entre les DC (GPO, scripts de logon repliques)
+#   -CreateDnsDelegation:$false   : ne cree pas de delegation DNS vers un sous-domaine
+#   -InstallDns:$true             : installe le role DNS (traduit les noms AD en IP)
+#   -NoRebootOnCompletion:$false  : le serveur redemarrera automatiquement a la fin
 Install-ADDSForest `
     -DomainName $Domain `
-    -DomainNetbiosName $Netbios ` # nom court
+    -DomainNetbiosName $Netbios `
     -SafeModeAdministratorPassword $DSRM `
-    -ForestMode "WinThreshold" ` # derniere maj des foret windows avec features  ( 2016 )
+    -ForestMode "WinThreshold" `
     -DomainMode "WinThreshold" `
-    -DatabasePath "C:\Windows\NTDS" ` # NT Directory Services Database
-    -LogPath "C:\Windows\NTDS" ` # pour la synchro ecrit d abord dans log NTDS puis maj
-    -SysvolPath "C:\Windows\SYSVOL" ` # dossier partager entre les DC de base : les gpo, scripts logon qui seront repliques
-    -CreateDnsDelegation:$false ` # ne redirige pas les domaine vers un sous domaine 
+    -DatabasePath "C:\Windows\NTDS" `
+    -LogPath "C:\Windows\NTDS" `
+    -SysvolPath "C:\Windows\SYSVOL" `
+    -CreateDnsDelegation:$false `
     -InstallDns:$true `
-    -NoRebootOnCompletion:$false ` # rebootera
+    -NoRebootOnCompletion:$false `
     -Force:$true

@@ -11,19 +11,21 @@ if (-not (Test-Path $Path)) { Write-Host "Fichier introuvable." -ForegroundColor
 
 
 $Delimiter = Get-Input "Delimiteur CSV" "Delimiteur" ";"
-$Password  = Read-Host "Mot de passe par defaut pour les utilisateurs importes" -AsSecureString
-
-# sera mdp par defaut pour tous 
+# mdp par defaut pour tous les comptes importes, saisi via un pop-up masque
+$Password  = Get-PasswordInput "Mot de passe par defaut pour les utilisateurs importes" "Mot de passe par defaut"
 
 
 Import-Csv -Path $Path -Delimiter $Delimiter | ForEach-Object {
-    # si exsite deja 
-    if (Get-ADUser -Filter { SamAccountName -eq $_.SamAccountName } -ErrorAction SilentlyContinue) {
-        Write-Host "$($_.SamAccountName) existe deja, ignore." -ForegroundColor Yellow
+    # on capture le SamAccountName dans une variable locale (plus fiable dans -Filter)
+    $sam = $_.SamAccountName
+    # si l'utilisateur existe deja, on ne le recree pas
+    if (Get-ADUser -Filter "SamAccountName -eq '$sam'" -ErrorAction SilentlyContinue) {
+        Write-Host "$sam existe deja, ignore." -ForegroundColor Yellow
     } else {
         # Splatting : parametres regroupes dans un hashtable pour la lisibilite
         $UserParams = @{
-            SamAccountName        = $_.SamAccountName
+            Name                  = $sam   # -Name est OBLIGATOIRE pour New-ADUser (CN de l'objet)
+            SamAccountName        = $sam
             GivenName             = $_.GivenName
             Surname               = $_.Surname
             EmailAddress          = $_.EmailAddress
@@ -32,7 +34,26 @@ Import-Csv -Path $Path -Delimiter $Delimiter | ForEach-Object {
             ChangePasswordAtLogon = $true
         }
         New-ADUser @UserParams
-        Write-Host "$($_.SamAccountName) cree." -ForegroundColor Green
+        Write-Host "$sam cree." -ForegroundColor Green
+    }
+}
+
+# --- Rechargement des GROUPES depuis le fichier *_groups.csv genere par SaveDataBase ---
+# (corrige l'asymetrie : SaveDataBase exporte les groupes, LoadDataBase les recree)
+$GroupsPath = $Path -replace "\.csv", "_groups.csv"
+if (Test-Path $GroupsPath) {
+    Write-Host "`n[GROUPES] Rechargement depuis $GroupsPath" -ForegroundColor Cyan
+    Import-Csv -Path $GroupsPath -Delimiter $Delimiter | ForEach-Object {
+        $gname = $_.Name
+        if (Get-ADGroup -Filter "Name -eq '$gname'" -ErrorAction SilentlyContinue) {
+            Write-Host "$gname existe deja, ignore." -ForegroundColor Yellow
+        } else {
+            # valeurs par defaut si une colonne est vide dans le CSV
+            $scope = if ($_.GroupScope)    { $_.GroupScope }    else { "Global" }
+            $cat   = if ($_.GroupCategory) { $_.GroupCategory } else { "Security" }
+            New-ADGroup -Name $gname -GroupScope $scope -GroupCategory $cat -Description $_.Description
+            Write-Host "$gname cree." -ForegroundColor Green
+        }
     }
 }
 
